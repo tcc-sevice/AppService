@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/backgroundlogin"
-    tools:context=".activity.MainActivity">
+    tools:context=".activity.LoginActiviy">
 
     <EditText
         android:id="@+id/email"
@@ -71,6 +71,7 @@
         android:layout_marginStart="44dp"
         android:layout_marginLeft="44dp"
         android:layout_marginBottom="72dp"
+        android:onClick="abrirCadastro"
         android:text="Cadastrar-se"
         android:textSize="18sp"
         android:textStyle="bold"

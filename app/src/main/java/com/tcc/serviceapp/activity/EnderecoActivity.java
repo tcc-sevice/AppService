@@ -14,8 +14,8 @@ public class EnderecoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_endereco);
     }
 
-    public Usuario recebeUser(Usuario user){
-
-        return user;
-    }
+//    public Usuario recebeUser(Usuario user){
+//
+//        return user;
+//    }
 }

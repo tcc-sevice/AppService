@@ -8,11 +8,9 @@ public class Usuario {
     private String sobrenome;
     private Float cpf;
     private Date dataNascimento;
-    private String masculino;
-    private String feminino;
-    private String outro;
+    private String sexo;
     private String email;
-    private Integer telefone;
+    private String telefone;
     private String senha;
     private String confirmasSenha;
     private String caminhoFotoPerfil;
@@ -52,28 +50,12 @@ public class Usuario {
         this.dataNascimento = dataNascimento;
     }
 
-    public String getMasculino() {
-        return masculino;
+    public String getSexo() {
+        return sexo;
     }
 
-    public void setMasculino(String masculino) {
-        this.masculino = masculino;
-    }
-
-    public String getFeminino() {
-        return feminino;
-    }
-
-    public void setFeminino(String feminino) {
-        this.feminino = feminino;
-    }
-
-    public String getOutro() {
-        return outro;
-    }
-
-    public void setOutro(String outro) {
-        this.outro = outro;
+    public void setSexo(String sexo) {
+        this.sexo = sexo;
     }
 
     public String getEmail() {
@@ -84,11 +66,11 @@ public class Usuario {
         this.email = email;
     }
 
-    public Integer getTelefone() {
+    public String getTelefone() {
         return telefone;
     }
 
-    public void setTelefone(Integer telefone) {
+    public void setTelefone(String telefone) {
         this.telefone = telefone;
     }
 

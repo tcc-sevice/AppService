@@ -8,20 +8,17 @@
     tools:context=".activity.EnderecoActivity">
 
     <android.support.design.widget.TextInputEditText
-        android:id="@+id/numero"
+        android:id="@+id/cep"
         android:layout_width="176dp"
         android:layout_height="43dp"
-        android:layout_marginStart="40dp"
-        android:layout_marginLeft="40dp"
-        android:layout_marginTop="26dp"
-        android:layout_marginEnd="9dp"
-        android:layout_marginRight="9dp"
-        android:hint="Número"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="38dp"
+        android:hint="Cep"
         android:inputType="number"
         android:textColor="@color/textpreto"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/complemento"
-        app:layout_constraintTop_toBottomOf="@+id/rua" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/localizacao" />
 
     <android.support.design.widget.TextInputEditText
         android:id="@+id/rua"
@@ -41,17 +38,62 @@
         app:layout_constraintTop_toBottomOf="@+id/cep" />
 
     <android.support.design.widget.TextInputEditText
-        android:id="@+id/cep"
+        android:id="@+id/complemento"
         android:layout_width="176dp"
         android:layout_height="43dp"
         android:layout_marginStart="10dp"
         android:layout_marginLeft="10dp"
-        android:layout_marginTop="38dp"
-        android:hint="Cep"
-        android:inputType="number"
+        android:layout_marginTop="26dp"
+        android:hint="Complemento"
+        android:inputType="textNoSuggestions"
         android:textColor="@color/textpreto"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/localizacao" />
+        app:layout_constraintTop_toBottomOf="@+id/rua" />
+
+    <android.support.design.widget.TextInputEditText
+        android:id="@+id/numero"
+        android:layout_width="176dp"
+        android:layout_height="43dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="26dp"
+        android:layout_marginEnd="9dp"
+        android:layout_marginRight="9dp"
+        android:hint="Número"
+        android:inputType="number"
+        android:textColor="@color/textpreto"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/complemento"
+        app:layout_constraintTop_toBottomOf="@+id/rua" />
+
+    <android.support.design.widget.TextInputEditText
+        android:id="@+id/bairro"
+        android:layout_width="176dp"
+        android:layout_height="43dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="13dp"
+        android:hint="Bairro"
+        android:inputType="text"
+        android:textColor="@color/textpreto"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/complemento" />
+
+    <android.support.design.widget.TextInputEditText
+        android:id="@+id/cidade"
+        android:layout_width="176dp"
+        android:layout_height="43dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="13dp"
+        android:layout_marginEnd="9dp"
+        android:layout_marginRight="9dp"
+        android:hint="Cidade"
+        android:inputType="text|textPostalAddress"
+        android:textColor="@color/textpreto"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/bairro"
+        app:layout_constraintTop_toBottomOf="@+id/numero" />
 
     <Button
         android:id="@+id/localizacao"
@@ -96,48 +138,6 @@
         app:layout_constraintStart_toEndOf="@+id/cep"
         app:layout_constraintTop_toBottomOf="@+id/localizacao" />
 
-    <android.support.design.widget.TextInputEditText
-        android:id="@+id/bairro"
-        android:layout_width="176dp"
-        android:layout_height="43dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="13dp"
-        android:hint="Bairro"
-        android:inputType="text"
-        android:textColor="@color/textpreto"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/complemento" />
-
-    <android.support.design.widget.TextInputEditText
-        android:id="@+id/complemento"
-        android:layout_width="176dp"
-        android:layout_height="43dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="26dp"
-        android:hint="Complemento"
-        android:inputType="textNoSuggestions"
-        android:textColor="@color/textpreto"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rua" />
-
-    <android.support.design.widget.TextInputEditText
-        android:id="@+id/cidade"
-        android:layout_width="176dp"
-        android:layout_height="43dp"
-        android:layout_marginStart="40dp"
-        android:layout_marginLeft="40dp"
-        android:layout_marginTop="13dp"
-        android:layout_marginEnd="9dp"
-        android:layout_marginRight="9dp"
-        android:hint="Cidade"
-        android:inputType="date"
-        android:textColor="@color/textpreto"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/bairro"
-        app:layout_constraintTop_toBottomOf="@+id/numero" />
-
     <Button
         android:id="@+id/cadastrar"
         android:layout_width="0dp"
@@ -149,6 +149,7 @@
         android:layout_marginRight="24dp"
         android:layout_marginBottom="139dp"
         android:background="@drawable/background_botao"
+        android:onClick="cadastrarEndereco"
         android:text="Enviar Cadastro"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

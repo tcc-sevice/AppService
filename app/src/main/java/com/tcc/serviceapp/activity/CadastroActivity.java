@@ -3,16 +3,17 @@ package com.tcc.serviceapp.activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.provider.MediaStore;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.rtoshiro.util.format.SimpleMaskFormatter;
 import com.github.rtoshiro.util.format.text.MaskTextWatcher;
@@ -53,14 +54,18 @@ public class CadastroActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cadastro);
+        // Define o título da barra superior:
+        getSupportActionBar().setTitle("Sevice - Cadastre seus dados");
+        //
         inicializaComponente();
+        //
         formatMascara();
 
         Intent i = getIntent();
 
         idFoto = UUID.randomUUID().toString();
 
-        storageReference = ConfiguracaoFirebase.getStorageReference();
+        storageReference = ConfiguracaoFirebase.getReferenciaStorage();
 
         fotoPerfil.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -289,21 +294,21 @@ public class CadastroActivity extends AppCompatActivity {
                 if(senha.equals(confirmaSenha)){
                 }else{
                     Toast.makeText( CadastroActivity.this,
-                            "as senhas não corresponde, confirme a senha igual a preenchida anteriomente !",
+                            "As senhas digitadas não correspondem, digite a mesma senha nos dois campos !",
                             Toast.LENGTH_SHORT).show();
 
                     retornaErro = "S";
                 }
             }else{
                 Toast.makeText( CadastroActivity.this,
-                        "confirme a senha !",
+                        "Confirme a senha !",
                         Toast.LENGTH_SHORT).show();
 
                 retornaErro = "S";
             }
         }else{
             Toast.makeText( CadastroActivity.this,
-                    "preencha a senha !",
+                    "Preencha a senha !",
                     Toast.LENGTH_SHORT).show();
 
             retornaErro = "S";
@@ -330,43 +335,43 @@ public class CadastroActivity extends AppCompatActivity {
                                               retornoErro = "N";
                                           }else{
                                               Toast.makeText( CadastroActivity.this,
-                                                      "email invalido !",
+                                                      "E-mail invalido !",
                                                       Toast.LENGTH_SHORT).show();
                                           }
                                       }
                                   }else{
                                       Toast.makeText( CadastroActivity.this,
-                                                      "preencha o Telefone !",
+                                                      "Preencha o Telefone !",
                                                        Toast.LENGTH_SHORT).show();
                                     }
                                 }else{
                                     Toast.makeText( CadastroActivity.this,
-                                                    "preencha o email !",
+                                                    "Preencha o email !",
                                                      Toast.LENGTH_SHORT).show();
                                 }
                             }else{
                                 Toast.makeText( CadastroActivity.this,
-                                                "preencha o sexo !",
+                                                "Preencha o sexo !",
                                                 Toast.LENGTH_SHORT).show();
                             }
                     }else{
                         Toast.makeText( CadastroActivity.this,
-                                        "preencha a data de nascimento !",
+                                        "Preencha a data de nascimento !",
                                         Toast.LENGTH_SHORT).show();
                     }
                 }else{
                     Toast.makeText( CadastroActivity.this,
-                                    "preencha o Cpf !",
+                                    "Preencha o CPF !",
                                     Toast.LENGTH_SHORT).show();
                 }
             }else{
                 Toast.makeText( CadastroActivity.this,
-                                "preencha o Sobrenome !",
+                                "Preencha o sobrenome !",
                                 Toast.LENGTH_SHORT).show();
             }
         }else{
             Toast.makeText( CadastroActivity.this,
-                            "preencha o nome !",
+                            "Preencha o nome !",
                             Toast.LENGTH_SHORT).show();
         }
 

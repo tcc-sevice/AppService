@@ -7,24 +7,6 @@
     android:background="@drawable/backgroundlogin"
     tools:context=".activity.LoginActiviy">
 
-    <com.google.android.gms.common.SignInButton
-        android:id="@+id/sign_in_button"
-        android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginLeft="24dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginRight="24dp"
-        android:orientation="horizontal"
-        app:buttonSize="wide"
-        app:colorScheme="light"
-        app:layout_constraintBottom_toTopOf="@+id/esquecisenha"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/login">
-
-    </com.google.android.gms.common.SignInButton>
-
     <EditText
         android:id="@+id/emailLogin"
         android:layout_width="0dp"
@@ -38,7 +20,7 @@
         android:ems="10"
         android:hint="E-mail"
         android:inputType="textEmailAddress"
-        android:padding="8dp"
+        android:padding="12dp"
         android:textColor="@color/textpreto"
         app:layout_constraintBottom_toTopOf="@+id/senhaLogin"
         app:layout_constraintEnd_toEndOf="parent"
@@ -52,13 +34,14 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginLeft="24dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="24dp"
         android:layout_marginRight="24dp"
         android:background="@drawable/background_caixa_texto"
         android:ems="10"
         android:hint="Senha"
         android:inputType="textPassword"
-        android:padding="8dp"
+        android:padding="12dp"
         app:layout_constraintBottom_toTopOf="@+id/login"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -71,46 +54,44 @@
         android:layout_height="48dp"
         android:layout_marginStart="24dp"
         android:layout_marginLeft="24dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="24dp"
         android:layout_marginRight="24dp"
         android:background="@drawable/background_botao"
         android:text="Entrar"
-        app:layout_constraintBottom_toTopOf="@+id/sign_in_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/senhaLogin" />
 
-    <TextView
-        android:id="@+id/cadastrar"
+    <Button
+        android:id="@+id/buttonCadastrarSe"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginLeft="24dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp"
+        android:background="@drawable/background_botao"
         android:onClick="abrirCadastro"
         android:text="Cadastrar-se"
-        android:textAlignment="center"
-        android:textColor="@color/common_google_signin_btn_text_dark_focused"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/imageView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/esquecisenha" />
+        app:layout_constraintTop_toBottomOf="@+id/login" />
 
     <TextView
         android:id="@+id/esquecisenha"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:text="Esqueci minha senha !"
         android:textAlignment="center"
         android:textColor="@color/common_google_signin_btn_text_dark_focused"
         android:textSize="14sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/cadastrar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sign_in_button" />
+        app:layout_constraintTop_toBottomOf="@+id/buttonCadastrarSe" />
 
     <ImageView
         android:id="@+id/logo"
@@ -128,27 +109,27 @@
         app:srcCompat="@drawable/logo_sevice" />
 
     <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="65dp"
-        android:layout_height="65dp"
+        android:id="@+id/imageViewComoFunciona"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/imageView2"
+        app:layout_constraintEnd_toStartOf="@+id/imageViewFaleConosco"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cadastrar"
+        app:layout_constraintTop_toBottomOf="@+id/esquecisenha"
         app:srcCompat="@drawable/botao_comofunciona" />
 
     <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="65dp"
-        android:layout_height="65dp"
+        android:id="@+id/imageViewFaleConosco"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
-        app:layout_constraintTop_toBottomOf="@+id/cadastrar"
+        app:layout_constraintStart_toEndOf="@+id/imageViewComoFunciona"
+        app:layout_constraintTop_toBottomOf="@+id/esquecisenha"
         app:srcCompat="@drawable/botao_faleconosco" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

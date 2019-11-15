@@ -38,6 +38,7 @@ dependencies {
 
     apply plugin: 'com.google.gms.google-services'
 
-
+    //Dependencia circle imageview
+    implementation 'de.hdodenhof:circleimageview:3.0.1'
 
 }

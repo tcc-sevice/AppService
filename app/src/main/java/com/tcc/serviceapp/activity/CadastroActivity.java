@@ -1,5 +1,6 @@
 package com.tcc.serviceapp.activity;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -9,9 +10,8 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.CompoundButton;
+import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
@@ -21,36 +21,40 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.tcc.serviceapp.R;
 import com.tcc.serviceapp.helper.ConfiguracaoFirebase;
+import com.tcc.serviceapp.helper.ValidaDados;
 import com.tcc.serviceapp.model.Usuario;
 
 import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.UUID;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class CadastroActivity extends AppCompatActivity {
 
     private EditText dataNascimento, cpf, nome, sobrenome, email, telefone, senha, confirmarSenha;
     private RadioButton masculino, feminino, outro;
-    private ImageView fotoPerfil;
+    private CircleImageView fotoPerfil;
     private static final int SELECAO_GALERIA = 200;
     private FirebaseAuth autenticacao;
     private StorageReference storageReference;
     private Usuario usuario;
     private String idFoto;
     private Uri url;
+    private Calendar calendar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,13 +62,11 @@ public class CadastroActivity extends AppCompatActivity {
         setContentView(R.layout.activity_cadastro);
         inicializaComponente();
         formatMascara();
-
         Intent i = getIntent();
 
         idFoto = UUID.randomUUID().toString();
 
         storageReference = ConfiguracaoFirebase.getStorageReference();
-
         fotoPerfil.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -74,6 +76,33 @@ public class CadastroActivity extends AppCompatActivity {
                 }
             }
         });
+
+        calendar = Calendar.getInstance();
+
+        final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                  int dayOfMonth) {
+                calendar.set(Calendar.YEAR, year);
+                calendar.set(Calendar.MONTH, monthOfYear);
+                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                String myFormat = "dd/MM/yyyy"; //In which you need put here
+                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, new Locale("pt","BR"));
+
+                dataNascimento.setText(sdf.format(calendar.getTime()));
+            }
+        };
+
+        dataNascimento.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                new DatePickerDialog(CadastroActivity.this, date, calendar
+                        .get(Calendar.YEAR), calendar.get(Calendar.MONTH),
+                        calendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+
     }
 
     @Override
@@ -135,8 +164,8 @@ public class CadastroActivity extends AppCompatActivity {
 
         nome = findViewById(R.id.nome);
         sobrenome = findViewById(R.id.sobrenome);
-        cpf = findViewById(R.id.cpf);
         dataNascimento = findViewById(R.id.dataNascimento);
+        cpf = findViewById(R.id.cpf);
         masculino = findViewById(R.id.masculino);
         feminino = findViewById(R.id.feminino);
         outro = findViewById(R.id.outro);
@@ -171,10 +200,6 @@ public class CadastroActivity extends AppCompatActivity {
     }
 
     private void formatMascara() {
-
-        SimpleMaskFormatter mascaraData = new SimpleMaskFormatter("NN/NN/NNNN");
-        MaskTextWatcher formatData = new MaskTextWatcher(dataNascimento, mascaraData);
-        dataNascimento.addTextChangedListener(formatData);
 
         SimpleMaskFormatter mascaraTel = new SimpleMaskFormatter("(NN)-NNNNN-NNNN");
         MaskTextWatcher formatTel = new MaskTextWatcher(telefone, mascaraTel);
@@ -314,6 +339,17 @@ public class CadastroActivity extends AppCompatActivity {
 
         return retornaErro;
     }
+
+    private String validaCpf(String cpf){
+        String cpfTransform = cpf.replaceAll("[^0-9]", "");
+        String retornaErro = "N";
+
+        if (!ValidaDados.validaCpf(cpfTransform)){
+            retornaErro = "S";
+        }
+        return retornaErro;
+    }
+
     private String validaCampos( String campoNome, String campoSobrenome, String campoCpf, String campoDataNascimento,
                                  String campoEmail,String campoTelefone, String campoSenha,
                                  String campoConfirmarSenha ) {
@@ -330,11 +366,23 @@ public class CadastroActivity extends AppCompatActivity {
                                   if( !campoTelefone.isEmpty()){
                                       if (validaSenha(campoSenha,campoConfirmarSenha)== "N") {
                                           if (validateEmailFormat(campoEmail)){
-                                              retornoErro = "N";
+                                              if (validaCpf(campoCpf) == "N"){
+                                                  if (ValidaDados.validadeData(campoDataNascimento)=="N") {
+                                                      retornoErro = "N";
+                                                  }else{
+                                                      Toast.makeText(CadastroActivity.this,
+                                                                     "Digite uma data de nascimento válida !",
+                                                                      Toast.LENGTH_SHORT).show();
+                                                  }
+                                              }else{
+                                                     Toast.makeText( CadastroActivity.this,
+                                                                     "Digite um CPF válido !",
+                                                                      Toast.LENGTH_SHORT).show();
+                                              }
                                           }else{
                                               Toast.makeText( CadastroActivity.this,
-                                                      "email invalido !",
-                                                      Toast.LENGTH_SHORT).show();
+                                                              "email invalido !",
+                                                               Toast.LENGTH_SHORT).show();
                                           }
                                       }
                                   }else{

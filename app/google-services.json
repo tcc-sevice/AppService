@@ -8,18 +8,18 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:883925385050:android:ff0d13ff16ad9956",
+        "mobilesdk_app_id": "1:883925385050:android:43fb08ddfbfeb8d323fd63",
         "android_client_info": {
           "package_name": "com.tcc.serviceapp"
         }
       },
       "oauth_client": [
         {
-          "client_id": "883925385050-5tab29aq6c7mbrbbv7bbh6rgli1uokm6.apps.googleusercontent.com",
+          "client_id": "883925385050-15d4r2c5fcb7ial1n48hlt0ser60epu2.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.tcc.serviceapp",
-            "certificate_hash": "2688fe42926c40b092a24fad264c522142d0dba2"
+            "certificate_hash": "b81f5dd066f52845d94a3e74b8ed5812bb1cda73"
           }
         },
         {

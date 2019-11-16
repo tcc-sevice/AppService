@@ -14,7 +14,7 @@ public class Usuario {
     private String id;
     private String nome;
     private String sobrenome;
-    private String  cpf;
+    private String cpf;
     private Date   dataNascimento;
     private String sexo;
     private String email;
@@ -22,7 +22,7 @@ public class Usuario {
     private String senha;
     private String confirmasSenha;
     private String idFoto;
-    private Uri caminhoFotoPerfil = null;
+    private Uri    caminhoFotoPerfil = null;
 
     public Usuario() {
     }

@@ -117,7 +117,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/fotoPerfil" />
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/fotoPerfil"
         android:layout_width="0dp"
         android:layout_height="114dp"
@@ -129,7 +130,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/avatar" />
+        android:src="@drawable/avatar" />
+
 
     <TextView
         android:id="@+id/localizaCep"

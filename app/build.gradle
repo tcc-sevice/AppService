@@ -40,6 +40,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-storage:19.1.0'
     implementation 'com.google.firebase:firebase-auth:19.1.0'
 
+    //Dependencia circle imageview
+    implementation 'de.hdodenhof:circleimageview:3.0.1'
+
 }
 //Dependencias Firebase
 apply plugin: 'com.google.gms.google-services'

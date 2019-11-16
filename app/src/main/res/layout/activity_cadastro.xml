@@ -26,7 +26,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/confirmeSenha" />
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/fotoPerfil"
         android:layout_width="131dp"
         android:layout_height="112dp"
@@ -36,7 +36,7 @@
         app:layout_constraintEnd_toStartOf="@+id/sobrenome"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/avatar" />
+        android:src="@drawable/avatar" />
 
     <TextView
         android:id="@+id/textView"
@@ -101,16 +101,15 @@
 
     <EditText
         android:id="@+id/dataNascimento"
-        android:layout_width="0dp"
+        android:layout_width="201dp"
         android:layout_height="43dp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        android:hint="Data de Nascimento"
-        android:inputType="date"
-        android:textColor="@color/textpreto"
+        android:hint="Data Nascimento"
+        android:inputType="text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/cpf"
         app:layout_constraintTop_toBottomOf="@+id/fotoPerfil" />

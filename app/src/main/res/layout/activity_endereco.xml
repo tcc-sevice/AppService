@@ -139,7 +139,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        android:text="Esqueci meu CEP !"
+        android:text="@string/esqueci_cep"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/cep"
         app:layout_constraintEnd_toEndOf="parent"

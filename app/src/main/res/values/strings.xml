@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Sevice</string>
+    <!--Textos com sublinhado-->
+    <string name="esqueci_senha"><u>Esqueci minha senha !</u></string>
+    <string name="esqueci_cep"><u>Esqueci meu CEP !</u></string>
 </resources>

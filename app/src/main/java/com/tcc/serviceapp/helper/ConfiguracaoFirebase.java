@@ -9,7 +9,7 @@ import com.google.firebase.storage.StorageReference;
 public class ConfiguracaoFirebase {
     private static DatabaseReference referenciaData;
     private static FirebaseAuth      referenciaAutenticacao;
-    private static StorageReference referenciaStorage;
+    private static StorageReference  referenciaStorage;
 
     // Retorna referencia do banco de dados do Firebase
     public static DatabaseReference getReferenciaData(){
@@ -20,7 +20,7 @@ public class ConfiguracaoFirebase {
     }
 
     // Retorna intancia do serviço de autenticação do Firebase
-    public static FirebaseAuth getReferenciaAutenticacao() {
+    public static FirebaseAuth getReferenciaAutenticacao(){
         if (referenciaAutenticacao == null) {
             referenciaAutenticacao = FirebaseAuth.getInstance();
         }

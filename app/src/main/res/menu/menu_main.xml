@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--Esse arquivo define menus na actionBar com instâncias correspondentes em relação ao login-->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!--Exibição para quando o usuário não está logado no app-->
+    <group android:id="@+id/group_deslogado"
+           android:visible="false">
+        <!--A tag 'showAsAction' faz o menu ficar no nível do actionBar-->
+        <item android:id="@+id/menu_login"
+              android:title="Cadastro / Entrar"
+              app:showAsAction="always"/>
+    </group>
+
+
+    <!--Grupo de funções (menu) para quando o usuário já está logado no app-->
+    <group android:id="@+id/group_logado"
+           android:visible="false">
+        <item android:id="@+id/menu_anuncios"
+              android:title="Meus anúncios"/>
+        <item android:id="@+id/menu_sair"
+              android:title="Sair"/>
+    </group>
+
+</menu>

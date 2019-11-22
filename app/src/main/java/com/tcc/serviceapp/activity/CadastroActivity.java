@@ -174,7 +174,7 @@ public class CadastroActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Toast.makeText(CadastroActivity.this,
-                               "Erro ao fazer Upload da imagem" ,
+                               "Erro ao fazer upload da imagem" ,
                                 Toast.LENGTH_SHORT).show();
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -243,6 +243,7 @@ public class CadastroActivity extends AppCompatActivity {
         usuario.setSenha(campoSenha);
         usuario.setConfirmasSenha(campoConfirmasSenha);
         usuario.setIdFoto(idFoto);
+
 
         //FirebaseApp.initializeApp(this);
         autenticacao = ConfiguracaoFirebase.getReferenciaAutenticacao();

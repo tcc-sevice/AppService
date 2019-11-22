@@ -1,0 +1,39 @@
+Log de desenvolvimento - Sevice - Leonardo Durães
+
+|| ------------------------------------------------------------------------------------------------------------------------------------------------ ||
+LOGS:
+
+21/11/2019
+> Desenvolvendo menus do actionBar da tela principal (MainActivity) {#451}
+  - Criei pasta 'menu' de recursos do Android
+    - Dentro criei uma 'Menu resourse file' chamada "menu_main.xml"
+      - Nesse arquivo fiz a definição de menus do 'actionBar' para a MainActivity. Um tipo para quando o usuário está deslogado e outro para quando está logado.
+  - Na MainActivity.java adicionei 3 métodos para carregar, manipular visibilidade e manipular funções dos menus: {#452}
+    - onCreateOptionsMenu()
+    - onPrepareOptionsMenu()
+    - onOptionsItemSelected()
+  - Função de login e logout funcionais ! [commit]
+  
+
+      
+      
+|| ================================================================================================================================================ ||
+TODO:
+
+> Dev
+  - [em andamento] Tela principal com os anúncios do prestadores
+  - [não iniciado] Tela de splash
+  - [não iniciado] Integração com mapas e suas funcionalidades (???)
+  - [não iniciado] Tela de perfil (???)
+  - [não iniciado] Sistema de sugestões (???)
+  - [não iniciado] Sistema de avaliações (???)
+  -
+  
+> Bugs
+  - Upload de imagens no cadastro deve ser feito após o login do usuário, por causa do token de permição do Storage do Firebase
+  - Mudar tela de cadastro de endereços para dentro da tela de perfil
+
+
+
+|| ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ||
+MISC:

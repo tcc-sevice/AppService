@@ -45,7 +45,8 @@ public class NovoServicoActivity extends AppCompatActivity implements View.OnCli
             Manifest.permission.READ_EXTERNAL_STORAGE
     };
 
-    private List<String> listaFotosRecuperadas = new ArrayList<>();
+    private List<String> listaFotosRecuperadas = new ArrayList<>(); // Endereços do armaz. interno
+    private List<String> listaUrlFotos = new ArrayList<>(); // Endereços de fotos salvas no Firebase
 
     private Servico servico;
     private StorageReference storage;
@@ -64,7 +65,7 @@ public class NovoServicoActivity extends AppCompatActivity implements View.OnCli
 
         // Inicialização de componentes necessários da interface
         inicializarComponentes();
-        storage = ConfiguracaoFirebase.getReferenciaStorage();
+        storage = ConfiguracaoFirebase.getFirebaseStorage();
 
         // Carrega itens nos spinners
         carregarSpinner();
@@ -206,7 +207,8 @@ public class NovoServicoActivity extends AppCompatActivity implements View.OnCli
             if (!servico.getLocalidade().isEmpty()){
                 if (!servico.getCategoria().isEmpty()){
                     if (!servico.getNomeServico().isEmpty()){
-                        if (!servico.getValor().isEmpty() && !servico.getValor().equals("0")){
+                        if (!String.valueOf(campoValorServico.getRawValue()).isEmpty()
+                                && !String.valueOf(campoValorServico.getRawValue()).equals("0")){
                             if (!servico.getDescricao().isEmpty()){
                                 // Se todas as validações forem completadas corretamente, o serviço é salvo
                                 salvarServico();
@@ -248,7 +250,7 @@ public class NovoServicoActivity extends AppCompatActivity implements View.OnCli
         servico.setLocalidade(campoLocalidade.getSelectedItem().toString());
         servico.setCategoria(campoCategoria.getSelectedItem().toString());
         servico.setNomeServico(campoNomeServico.getText().toString());
-        servico.setValor(String.valueOf(campoValorServico.getRawValue()));
+        servico.setValor(campoValorServico.getText().toString());
         servico.setDescricao(campoDescricaoServico.getText().toString());
 
         return servico;
@@ -284,6 +286,13 @@ public class NovoServicoActivity extends AppCompatActivity implements View.OnCli
                 // String com o endereço completo da imagem no Firebase
                 String urlConvertida = taskSnapshot.getMetadata().getReference().getDownloadUrl().toString();
 
+                listaUrlFotos.add(urlConvertida);
+                // Condição para o upload do número de fotos adicionadas
+                if (totalFotos == listaUrlFotos.size()){
+                    servico.setFotos(listaUrlFotos);
+                    // Salva informações do serviço no banco de dados
+                    servico.salvar();
+                }
             }
         // Em caso de erro
         }).addOnFailureListener(new OnFailureListener() {

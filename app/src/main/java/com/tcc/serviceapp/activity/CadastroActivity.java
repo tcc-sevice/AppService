@@ -130,7 +130,7 @@ public class CadastroActivity extends AppCompatActivity {
 
         idFoto = UUID.randomUUID().toString();
         calendar = Calendar.getInstance();
-        storageReference = ConfiguracaoFirebase.getReferenciaStorage();
+        storageReference = ConfiguracaoFirebase.getFirebaseStorage();
     }
 
     @Override
@@ -241,12 +241,12 @@ public class CadastroActivity extends AppCompatActivity {
         usuario.setEmail(campoEmail);
         usuario.setTelefone(campoTelefone);
         usuario.setSenha(campoSenha);
-        usuario.setConfirmasSenha(campoConfirmasSenha);
+        usuario.setConfirmaSenha(campoConfirmasSenha);
         usuario.setIdFoto(idFoto);
 
 
         //FirebaseApp.initializeApp(this);
-        autenticacao = ConfiguracaoFirebase.getReferenciaAutenticacao();
+        autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
         autenticacao.createUserWithEmailAndPassword(
                 usuario.getEmail(),
                 usuario.getSenha()).addOnCompleteListener(
@@ -379,12 +379,12 @@ public class CadastroActivity extends AppCompatActivity {
         if(!campoNome.isEmpty()){
             if(!campoSobrenome.isEmpty()){
                 if(campoCpf.length() == 14){
-                    if( !campoDataNascimento.isEmpty()){
+                    if( campoDataNascimento.length() == 10 ){
                         if( masculino.isChecked()||
                             feminino.isChecked()||
                             outro.isChecked()){
                               if( !campoEmail.isEmpty()){
-                                  if( campoTelefone.length() == 11){
+                                  if( campoTelefone.length() == 16){
                                       if (validaSenha(campoSenha,campoConfirmarSenha).equals("N")) {
                                           if (validateEmailFormat(campoEmail)){
                                               if (validaCpf(campoCpf).equals("N")){

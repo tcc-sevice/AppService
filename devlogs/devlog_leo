@@ -47,6 +47,12 @@ LOGS:
   - Adicionei método para percorrer uma lista com a url de cada foto a ser salva, essa lista é preenchida ao adicionar uma imagem na interface
     - Adicionei mais um método que fará o devido upload das imagens e informações no banco de dados
       - Na Servico.java defini a criação de um ID, no método construtor, para cada serviço que será cadastrado {#461}
+    - Upload das fotos do serviço funcional ! [commit]
+  - Adicionei método para salvar os dados do serviço na classe Servico.java, além dos dados preenchidos pelo usuário, também são salvas informações de ID's
+    - Para tratar o fluxo de informações nos filtros de pesquisa, adicionei uma segunda classe que cria outro nó no banco, categorizando a localidade
+      - Upload dos dados do serviço no banco de dados funcional ! [commit]
+> 
+    
       
   
 
@@ -75,9 +81,10 @@ TODO:
 > Bugs e correções
   - Mover permissão de acesso ao armazenamento interno para a tela de cadastro, deixando apenas uma checagem na tela de novos serviços
   - Upload de imagens no cadastro deve ser feito após o login do usuário, por causa do token de permição do Storage do Firebase
-  - Mudar tela de cadastro de endereços para dentro da tela de perfil
+  - Mudar tela de cadastro de endereços para dentro da tela de perfil OU retrabalhar a sequencia na hora de cadastrar o usuário
   - Campo de valor no cadastro de serviços sem limite de numeros e causando overflow
-  - 
+  - Visualização da data de nascimento salva no banco de dados está estranha
+  - Classe ValidaDados e validação do CPF no cadastro (???)
 
 
 

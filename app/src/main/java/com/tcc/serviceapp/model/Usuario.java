@@ -2,7 +2,6 @@ package com.tcc.serviceapp.model;
 
 import android.net.Uri;
 
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
 import com.tcc.serviceapp.helper.ConfiguracaoFirebase;
@@ -20,7 +19,7 @@ public class Usuario {
     private String email;
     private String telefone;
     private String senha;
-    private String confirmasSenha;
+    private String confirmaSenha;
     private String idFoto;
     private Uri    caminhoFotoPerfil = null;
 
@@ -28,7 +27,7 @@ public class Usuario {
     }
 
     public void Salvar(Usuario usuario){
-        DatabaseReference firebaseRef = ConfiguracaoFirebase.getReferenciaData();
+        DatabaseReference firebaseRef = ConfiguracaoFirebase.getFirebase();
         DatabaseReference usuariosRef = firebaseRef.child("usuarios").child(getId());
         usuariosRef.setValue(usuario);
     }
@@ -98,11 +97,11 @@ public class Usuario {
     }
 
     @Exclude
-    public String getConfirmasSenha() {
-        return confirmasSenha;
+    public String getConfirmaSenha() {
+        return confirmaSenha;
     }
-    public void setConfirmasSenha(String confirmasSenha) {
-        this.confirmasSenha = confirmasSenha;
+    public void setConfirmaSenha(String confirmaSenha) {
+        this.confirmaSenha = confirmaSenha;
     }
 
     public String getIdFoto() {

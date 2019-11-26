@@ -19,9 +19,41 @@ public class Servico {
     // Construtor
     public Servico() {
         // Gera um ID para o serviço cadastrado que será a identificação no Firebase
-        DatabaseReference servicoRef = ConfiguracaoFirebase.getReferenciaData()
-                .child("meus_servicos");
+        DatabaseReference servicoRef = ConfiguracaoFirebase.getFirebase()
+                .child("servicos_cadastrados");
         setIdServico(servicoRef.push().getKey());
+    }
+
+    // Salva os dados do serviço no banco de dados do Firebase
+    public void salvar(){
+        //TODO fazer uma classe separada apenas para dados do usuario ("UsuarioFirebase", por exemplo) caso for necessário usar muitos dados
+
+        // Recebe o ID do usuário conectado
+        String idUsuario = ConfiguracaoFirebase.getIdUsuario();
+
+        // Referencia do banco de dados
+        DatabaseReference servicoRef = ConfiguracaoFirebase.getFirebase()
+                .child("servicos_cadastrados");
+
+        // Atribui os valores
+        servicoRef.child(idUsuario)
+                .child(this.getIdServico())
+                .setValue(this);
+
+        salvarAnuncioPublico();
+    }
+
+    public void salvarAnuncioPublico(){
+
+        // Referencia do banco de dados
+        DatabaseReference servicoRef = ConfiguracaoFirebase.getFirebase()
+                .child("servicos_publicos");
+
+        // Atribui os valores
+        servicoRef.child(this.getLocalidade())
+                .child(getCategoria())
+                .child(this.getIdServico())
+                .setValue(this);
     }
 
     public String getIdServico() {

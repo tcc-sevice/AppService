@@ -14,7 +14,7 @@ public class Endereco {
     private String  complemento;
 
     public void Salvar(Endereco endereco){
-        DatabaseReference firebaseRef = ConfiguracaoFirebase.getReferenciaData();
+        DatabaseReference firebaseRef = ConfiguracaoFirebase.getFirebase();
         DatabaseReference enderecoRef = firebaseRef.child("Endereco").child("Id");
         enderecoRef.setValue(endereco);
     }

@@ -1,14 +1,14 @@
 package com.tcc.serviceapp.activity;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -75,7 +75,7 @@ public class LoginActiviy extends AppCompatActivity {
     // Método para fazer a validação dos dados para login
     public void validarLogin(Usuario usuario){
         // Objeto para manipulação da autenticação do Firebase
-        FirebaseAuth autenticacao = ConfiguracaoFirebase.getReferenciaAutenticacao();
+        FirebaseAuth autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
         // Usa o método do Firebase de autenticação por email e senha
         autenticacao.signInWithEmailAndPassword(
                 usuario.getEmail(),

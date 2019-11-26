@@ -3,4 +3,6 @@
     <!--Textos com sublinhado-->
     <string name="esqueci_senha"><u>Esqueci minha senha !</u></string>
     <string name="esqueci_cep"><u>Esqueci meu CEP !</u></string>
+
+    <string name="title_activity_meus_servicos">Meus serviços</string>
 </resources>

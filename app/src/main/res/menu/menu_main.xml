@@ -18,8 +18,8 @@
     <!--Grupo de funções (menu) para quando o usuário já está logado no app-->
     <group android:id="@+id/group_logado"
            android:visible="false">
-        <item android:id="@+id/menu_anuncios"
-              android:title="Meus anúncios"/>
+        <item android:id="@+id/menu_servicos"
+              android:title="Meus serviços"/>
         <item android:id="@+id/menu_sair"
               android:title="Sair"/>
     </group>

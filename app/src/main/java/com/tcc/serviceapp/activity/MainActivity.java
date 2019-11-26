@@ -1,13 +1,13 @@
 package com.tcc.serviceapp.activity;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.tcc.serviceapp.R;
@@ -53,12 +53,13 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.menu_login:
-                // Direciona para a tela de login/cadastro
+                // Direciona para outra tela
                 startActivity(new Intent(getApplicationContext(), LoginActiviy.class));
                 break;
 
-            case R.id.menu_anuncios:
-                //todo direcionamento para a tela de anuncios
+            case R.id.menu_servicos:
+                // Direciona para outra tela
+                startActivity(new Intent(getApplicationContext(), MeusServicosActivity.class));
                 break;
 
             case R.id.menu_sair:

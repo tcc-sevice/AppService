@@ -1,22 +1,20 @@
 package com.tcc.serviceapp.activity;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.rtoshiro.util.format.SimpleMaskFormatter;
 import com.github.rtoshiro.util.format.text.MaskTextWatcher;
@@ -54,26 +52,26 @@ public class CadastroActivity extends AppCompatActivity {
     private static final int SELECAO_GALERIA = 200;
     private FirebaseAuth autenticacao;
     private StorageReference storageReference;
-    private Usuario usuario;
     private String idFoto;
-    private Uri url; // Para acessar fotos do storage?
     private Calendar calendar;
+    private Usuario usuario;
+    private Uri url; // Para acessar fotos do storage?
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cadastro);
+
         // Define o título da barra superior:
         getSupportActionBar().setTitle("Sevice - Cadastre seus dados");
-        //
-        inicializaComponente();
-        //
+
+        // Inicialização de componentes necessários da interface
+        inicializarComponentes();
+
+        // Método que faz máscaras (formatação padão) para os campos de CPF, data de nascimento e telefone
         formatMascara();
 
-        idFoto = UUID.randomUUID().toString();
-
-        storageReference = ConfiguracaoFirebase.getReferenciaStorage();
-      
+        //
         fotoPerfil.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -84,10 +82,8 @@ public class CadastroActivity extends AppCompatActivity {
             }
         });
 
-        calendar = Calendar.getInstance();
-
+        //
         final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
-
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear,
                                   int dayOfMonth) {
@@ -117,8 +113,8 @@ public class CadastroActivity extends AppCompatActivity {
 
     }
 
-    private void inicializaComponente() {
-
+    // Inicializa componentes necessários da interface ao criar nova instância de cadastro
+    private void inicializarComponentes() {
         nome = findViewById(R.id.nome);
         sobrenome = findViewById(R.id.sobrenome);
         dataNascimento = findViewById(R.id.dataNascimento);
@@ -131,6 +127,10 @@ public class CadastroActivity extends AppCompatActivity {
         senha = findViewById(R.id.senha);
         confirmarSenha = findViewById(R.id.confirmeSenha);
         fotoPerfil = findViewById(R.id.fotoPerfil);
+
+        idFoto = UUID.randomUUID().toString();
+        calendar = Calendar.getInstance();
+        storageReference = ConfiguracaoFirebase.getReferenciaStorage();
     }
 
     @Override
@@ -378,17 +378,17 @@ public class CadastroActivity extends AppCompatActivity {
 
         if(!campoNome.isEmpty()){
             if(!campoSobrenome.isEmpty()){
-                if(!campoCpf.isEmpty()){
+                if(campoCpf.length() == 14){
                     if( !campoDataNascimento.isEmpty()){
                         if( masculino.isChecked()||
                             feminino.isChecked()||
                             outro.isChecked()){
                               if( !campoEmail.isEmpty()){
-                                  if( !campoTelefone.isEmpty()){
-                                      if (validaSenha(campoSenha,campoConfirmarSenha)== "N") {
+                                  if( campoTelefone.length() == 11){
+                                      if (validaSenha(campoSenha,campoConfirmarSenha).equals("N")) {
                                           if (validateEmailFormat(campoEmail)){
-                                              if (validaCpf(campoCpf) == "N"){
-                                                  if (ValidaDados.validadeData(campoDataNascimento)=="N") {
+                                              if (validaCpf(campoCpf).equals("N")){
+                                                  if (ValidaDados.validadeData(campoDataNascimento).equals("N")) {
                                                       retornoErro = "N";
                                                   }else{
                                                       Toast.makeText(CadastroActivity.this,

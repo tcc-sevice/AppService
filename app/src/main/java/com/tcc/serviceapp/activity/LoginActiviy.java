@@ -106,7 +106,7 @@ public class LoginActiviy extends AppCompatActivity {
 
     // Método para abrir a tela de cadastro ao clicar no botão "Cadastrar-se"
     public void abrirCadastro(View view){
-        startActivity(new Intent(getApplicationContext(), CadastroActivity.class));
+        startActivity(new Intent(getApplicationContext(), CadastroUsuarioActivity.class));
     }
 
 }

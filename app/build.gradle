@@ -49,6 +49,9 @@ dependencies {
     // Dependencia circle imageview
     implementation 'de.hdodenhof:circleimageview:3.0.1'
 
+    // Dependencia de dialog de progresso
+    implementation 'com.github.d-max:spots-dialog:1.1@aar'
+
 }
 //Dependencias Firebase
 apply plugin: 'com.google.gms.google-services'

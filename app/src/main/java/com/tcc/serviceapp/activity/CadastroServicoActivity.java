@@ -34,7 +34,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class NovoServicoActivity extends AppCompatActivity implements View.OnClickListener{
+import dmax.dialog.SpotsDialog;
+
+public class CadastroServicoActivity extends AppCompatActivity implements View.OnClickListener{
 
     private ImageView imagem1, imagem2, imagem3;
     private Spinner campoLocalidade, campoCategoria;
@@ -51,11 +53,13 @@ public class NovoServicoActivity extends AppCompatActivity implements View.OnCli
     private Servico servico;
     private StorageReference storage;
 
+    private android.app.AlertDialog dialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_novo_servico);
+        setContentView(R.layout.activity_cadastro_servico);
 
         // Define o título da barra superior:
         getSupportActionBar().setTitle("Novo serviço");
@@ -186,7 +190,7 @@ public class NovoServicoActivity extends AppCompatActivity implements View.OnCli
         builder.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                // Finaliza a NovoServicoActivity, impedindo o usuário de cadastrar serviço
+                // Finaliza a CadastroServicoActivity, impedindo o usuário de cadastrar serviço
                 finish();
             }
         });
@@ -258,6 +262,14 @@ public class NovoServicoActivity extends AppCompatActivity implements View.OnCli
 
     // Após o devido tratamento, salva os dados do serviço a ser cadastrado
     private void salvarServico(){
+        // Dialog de progresso do salvamento. Executa até receber o método dismiss(), ao salvar no banco
+        dialog = new SpotsDialog.Builder()
+                .setContext(this)
+                .setMessage("Salvando serviço")
+                .setCancelable(false)
+                .build();
+        dialog.show();
+
         // Salva as imagens no Storage do Firebase
         // Percorre a lista de endereços das imagens
         for (int i = 0; i < listaFotosRecuperadas.size(); i++){
@@ -292,6 +304,10 @@ public class NovoServicoActivity extends AppCompatActivity implements View.OnCli
                     servico.setFotos(listaUrlFotos);
                     // Salva informações do serviço no banco de dados
                     servico.salvar();
+                    // Interrompe o dialog de progresso
+                    dialog.dismiss();
+                    // Finaliza a activity
+                    finish();
                 }
             }
         // Em caso de erro

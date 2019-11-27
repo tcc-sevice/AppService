@@ -44,7 +44,7 @@ import java.util.UUID;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class CadastroActivity extends AppCompatActivity {
+public class CadastroUsuarioActivity extends AppCompatActivity {
 
     private EditText dataNascimento, cpf, nome, sobrenome, email, telefone, senha, confirmarSenha;
     private RadioButton masculino, feminino, outro;
@@ -60,7 +60,7 @@ public class CadastroActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_cadastro);
+        setContentView(R.layout.activity_cadastro_usuario);
 
         // Define o título da barra superior:
         getSupportActionBar().setTitle("Sevice - Cadastre seus dados");
@@ -103,7 +103,7 @@ public class CadastroActivity extends AppCompatActivity {
             @Override
             public void onFocusChange(View view, boolean b) {
                 if (view.isFocused()){
-                    new DatePickerDialog(CadastroActivity.this, date,
+                    new DatePickerDialog(CadastroUsuarioActivity.this, date,
                             calendar.get(Calendar.YEAR),
                             calendar.get(Calendar.MONTH),
                             calendar.get(Calendar.DAY_OF_MONTH)).show();
@@ -173,7 +173,7 @@ public class CadastroActivity extends AppCompatActivity {
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Toast.makeText(CadastroActivity.this,
+                Toast.makeText(CadastroUsuarioActivity.this,
                                "Erro ao fazer upload da imagem" ,
                                 Toast.LENGTH_SHORT).show();
             }
@@ -184,7 +184,7 @@ public class CadastroActivity extends AppCompatActivity {
                 // Esconde o texto "Carregar imagem" abaixo da foto de perfil
                 findViewById(R.id.textView_carregarImagem).setVisibility(View.GONE);
 
-                /*Toast.makeText(CadastroActivity.this,
+                /*Toast.makeText(CadastroUsuarioActivity.this,
                         "Sucesso ao fazer upload da imagem" ,
                         Toast.LENGTH_SHORT).show();*/
             }
@@ -278,7 +278,7 @@ public class CadastroActivity extends AppCompatActivity {
                                 e.printStackTrace();
                             }
 
-                            Toast.makeText(CadastroActivity.this,
+                            Toast.makeText(CadastroUsuarioActivity.this,
                                     "Erro: " + erroExcecao ,
                                     Toast.LENGTH_SHORT).show();
 
@@ -308,7 +308,7 @@ public class CadastroActivity extends AppCompatActivity {
             fotoPerfil.buildDrawingCache();
             Bitmap bitmap = fotoPerfil.getDrawingCache();
 
-            Intent intent = new Intent(CadastroActivity.this, EnderecoActivity.class);
+            Intent intent = new Intent(CadastroUsuarioActivity.this, EnderecoActivity.class);
             intent.putExtra("BitmapImage", bitmap);
             intent.putExtra("idEndereco", id);
             startActivity(intent);
@@ -337,21 +337,21 @@ public class CadastroActivity extends AppCompatActivity {
             if( !confirmaSenha.isEmpty()){
                 if(senha.equals(confirmaSenha)){
                 }else{
-                    Toast.makeText( CadastroActivity.this,
+                    Toast.makeText( CadastroUsuarioActivity.this,
                             "As senhas digitadas não correspondem, digite a mesma senha nos dois campos !",
                             Toast.LENGTH_LONG).show();
 
                     retornaErro = "S";
                 }
             }else{
-                Toast.makeText( CadastroActivity.this,
+                Toast.makeText( CadastroUsuarioActivity.this,
                         "Confirme a senha !",
                         Toast.LENGTH_SHORT).show();
 
                 retornaErro = "S";
             }
         }else{
-            Toast.makeText( CadastroActivity.this,
+            Toast.makeText( CadastroUsuarioActivity.this,
                     "Preencha a senha !",
                     Toast.LENGTH_SHORT).show();
 
@@ -391,53 +391,53 @@ public class CadastroActivity extends AppCompatActivity {
                                                   if (ValidaDados.validadeData(campoDataNascimento).equals("N")) {
                                                       retornoErro = "N";
                                                   }else{
-                                                      Toast.makeText(CadastroActivity.this,
+                                                      Toast.makeText(CadastroUsuarioActivity.this,
                                                                      "Digite uma data de nascimento válida !",
                                                                       Toast.LENGTH_SHORT).show();
                                                   }
                                               }else{
-                                                     Toast.makeText( CadastroActivity.this,
+                                                     Toast.makeText( CadastroUsuarioActivity.this,
                                                                      "Digite um CPF válido !",
                                                                       Toast.LENGTH_SHORT).show();
                                               }
                                           }else{
-                                              Toast.makeText( CadastroActivity.this,
+                                              Toast.makeText( CadastroUsuarioActivity.this,
                                                       "O e-mail digitado é inválido !",
                                                       Toast.LENGTH_SHORT).show();
                                           }
                                       }
                                   }else{
-                                      Toast.makeText( CadastroActivity.this,
+                                      Toast.makeText( CadastroUsuarioActivity.this,
                                                       "Preencha o telefone !",
                                                        Toast.LENGTH_SHORT).show();
                                     }
                                 }else{
-                                    Toast.makeText( CadastroActivity.this,
+                                    Toast.makeText( CadastroUsuarioActivity.this,
                                                     "Preencha seu e-mail !",
                                                      Toast.LENGTH_SHORT).show();
                                 }
                             }else{
-                                Toast.makeText( CadastroActivity.this,
+                                Toast.makeText( CadastroUsuarioActivity.this,
                                                 "Preencha seu sexo !",
                                                 Toast.LENGTH_SHORT).show();
                             }
                     }else{
-                        Toast.makeText( CadastroActivity.this,
+                        Toast.makeText( CadastroUsuarioActivity.this,
                                         "Preencha a data de nascimento !",
                                         Toast.LENGTH_SHORT).show();
                     }
                 }else{
-                    Toast.makeText( CadastroActivity.this,
+                    Toast.makeText( CadastroUsuarioActivity.this,
                                     "Preencha seu CPF !",
                                     Toast.LENGTH_SHORT).show();
                 }
             }else{
-                Toast.makeText( CadastroActivity.this,
+                Toast.makeText( CadastroUsuarioActivity.this,
                                 "Preencha seu sobrenome !",
                                 Toast.LENGTH_SHORT).show();
             }
         }else{
-            Toast.makeText( CadastroActivity.this,
+            Toast.makeText( CadastroUsuarioActivity.this,
                             "Preencha seu nome !",
                             Toast.LENGTH_SHORT).show();
         }

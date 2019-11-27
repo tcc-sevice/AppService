@@ -51,12 +51,13 @@ LOGS:
   - Adicionei método para salvar os dados do serviço na classe Servico.java, além dos dados preenchidos pelo usuário, também são salvas informações de ID's
     - Para tratar o fluxo de informações nos filtros de pesquisa, adicionei uma segunda classe que cria outro nó no banco, categorizando a localidade
       - Upload dos dados do serviço no banco de dados funcional ! [commit]
-> 
+> Trabalhando interface de adição do serviço {#462}
+  - Implementei novo módulo no projeto que disponibiliza um "dialog de progresso" para quando o serviço estiver sendo salvo (https://github.com/dybarsky/spots-dialog)
+    - A dialog é executada ao inicio do processo de salvar e fica em execução até finalizar, fazendo o usuário esperar o processo [commit]
+  -
     
       
   
-
-      
 || ================================================================================================================================================ ||
 TODO:
 
@@ -67,7 +68,6 @@ TODO:
   - [não iniciado] Tela de perfil (???)
   - [não iniciado] Sistema de sugestões (???)
   - [não iniciado] Sistema de avaliações (???)
-  -
   
   - Adicionar progress bar nas activities
   - Melhorar mascaras das datas e telefones seguindo o tutorial (https://github.com/rtoshiro/MaskFormatter)
@@ -85,9 +85,10 @@ TODO:
   - Campo de valor no cadastro de serviços sem limite de numeros e causando overflow
   - Visualização da data de nascimento salva no banco de dados está estranha
   - Classe ValidaDados e validação do CPF no cadastro (???)
+  -
 
 
-
+  
 || ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ||
 MISC:
 

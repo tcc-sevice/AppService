@@ -26,7 +26,7 @@ public class MeusServicosActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // Direciona para outra tela
-                startActivity(new Intent(getApplicationContext(), NovoServicoActivity.class));
+                startActivity(new Intent(getApplicationContext(), CadastroServicoActivity.class));
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

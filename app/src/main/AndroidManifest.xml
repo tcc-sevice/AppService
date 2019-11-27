@@ -16,7 +16,7 @@
         android:theme="@style/AppTheme"
         android:screenOrientation="portrait">
 
-        <activity android:name=".activity.NovoServicoActivity"></activity>
+        <activity android:name=".activity.CadastroServicoActivity"></activity>
 
         <activity
             android:name=".activity.MeusServicosActivity"
@@ -40,7 +40,7 @@
 
         <activity android:name=".activity.LoginActiviy" />
 
-        <activity android:name=".activity.CadastroActivity" />
+        <activity android:name=".activity.CadastroUsuarioActivity" />
 
         <activity android:name=".activity.EnderecoActivity" />
     </application>

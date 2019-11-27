@@ -5,26 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/backgroundlogin"
-    tools:context=".activity.CadastroActivity">
-
-    <Button
-        android:id="@+id/endereco"
-        android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginLeft="24dp"
-        android:layout_marginTop="80dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginRight="24dp"
-        android:layout_marginBottom="8dp"
-        android:background="@drawable/background_botao"
-        android:onClick="abrirEndereco"
-        android:text="Endereço"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/confirmeSenha" />
+    tools:context=".activity.CadastroUsuarioActivity">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/fotoPerfil"
@@ -39,17 +20,15 @@
         android:src="@drawable/avatar" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/textView_carregarImagem"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:text="Sexo:"
+        android:text="Carregar imagem"
         android:textColor="@color/textpreto"
-        app:layout_constraintBottom_toBottomOf="@+id/sexo"
-        app:layout_constraintEnd_toStartOf="@+id/sexo"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/sexo" />
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@+id/fotoPerfil"
+        app:layout_constraintStart_toStartOf="@+id/fotoPerfil"
+        app:layout_constraintTop_toBottomOf="@+id/fotoPerfil" />
 
     <EditText
         android:id="@+id/nome"
@@ -57,13 +36,12 @@
         android:layout_height="43dp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="40dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        android:layout_marginBottom="10dp"
         android:hint="Nome"
+        android:inputType="textCapWords"
         android:textColor="@color/textpreto"
-        app:layout_constraintBottom_toTopOf="@+id/sobrenome"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/fotoPerfil"
         app:layout_constraintTop_toTopOf="parent" />
@@ -74,10 +52,11 @@
         android:layout_height="43dp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:hint="Sobrenome"
+        android:inputType="textCapWords"
         android:textColor="@color/textpreto"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/fotoPerfil"
@@ -90,35 +69,49 @@
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginRight="4dp"
         android:hint="CPF"
         android:inputType="number"
         android:textColor="@color/textpreto"
         app:layout_constraintEnd_toStartOf="@+id/dataNascimento"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fotoPerfil" />
+        app:layout_constraintTop_toBottomOf="@+id/sobrenome" />
 
     <EditText
         android:id="@+id/dataNascimento"
-        android:layout_width="201dp"
+        android:layout_width="0dp"
         android:layout_height="43dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        android:hint="Data Nascimento"
-        android:inputType="text"
+        android:hint="Data de nascimento"
+        android:inputType="number"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/cpf"
-        app:layout_constraintTop_toBottomOf="@+id/fotoPerfil" />
+        app:layout_constraintTop_toBottomOf="@+id/sobrenome" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:text="Sexo:"
+        android:textColor="@color/textpreto"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/sexo"
+        app:layout_constraintEnd_toStartOf="@+id/sexo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/sexo" />
 
     <RadioGroup
         android:id="@+id/sexo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="28dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:orientation="horizontal"
@@ -131,27 +124,30 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Masculino" />
+            android:text="Masculino"
+            android:textSize="18sp" />
 
         <RadioButton
             android:id="@+id/feminino"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Feminino" />
+            android:text="Feminino"
+            android:textSize="18sp" />
 
         <RadioButton
             android:id="@+id/outro"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Outro" />
+            android:text="Outro"
+            android:textSize="18sp" />
     </RadioGroup>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayout15"
         android:layout_width="0dp"
-        android:layout_height="56dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="16dp"
@@ -165,10 +161,9 @@
             android:id="@+id/email"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:hint="Email"
+            android:hint="E-mail"
             android:inputType="textEmailAddress"
             android:textColor="@color/textpreto" />
-
     </com.google.android.material.textfield.TextInputLayout>
 
     <EditText
@@ -188,6 +183,28 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout15" />
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutSenha"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/telefone">
+
+        <EditText
+            android:id="@+id/senha"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="Senha"
+            android:inputType="textPassword"
+            android:textColor="@color/textpreto" />
+    </com.google.android.material.textfield.TextInputLayout>
+
     <EditText
         android:id="@+id/confirmeSenha"
         android:layout_width="match_parent"
@@ -202,22 +219,24 @@
         android:textColor="@color/textpreto"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/senha" />
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayoutSenha" />
 
-    <EditText
-        android:id="@+id/senha"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:hint="Senha"
-        android:inputType="textPassword"
-        android:textColor="@color/textpreto"
+    <Button
+        android:id="@+id/endereco"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/background_botao"
+        android:onClick="abrirEndereco"
+        android:text="Endereço"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/telefone" />
+        app:layout_constraintTop_toBottomOf="@+id/confirmeSenha" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

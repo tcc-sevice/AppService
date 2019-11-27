@@ -1,0 +1,97 @@
+Log de desenvolvimento - Sevice - Leonardo Durães
+
+|| ------------------------------------------------------------------------------------------------------------------------------------------------ ||
+LOGS:
+
+21/11/2019
+> Desenvolvendo menus do actionBar da tela principal (MainActivity) {#451}
+  - Criei pasta 'menu' de recursos do Android
+    - Dentro criei um arquivo de menu padrão chamado "menu_main.xml" (New > Menu resourse file) 
+      - Nesse arquivo fiz a definição de menus do 'actionBar' para a MainActivity. Um tipo para quando o usuário está deslogado e outro para quando está logado.
+  - Na MainActivity.java adicionei 3 métodos para carregar, manipular visibilidade e manipular funções dos menus: {#452}
+    - onCreateOptionsMenu()
+    - onPrepareOptionsMenu()
+    - onOptionsItemSelected()
+  - Função de login e logout funcionais ! [commit]
+> Desenvolvendo tela de splash {#523}
+  - Criei uma nova activity em branco (o AndroidStudio cria a classe e o xml da activity automaticamente)
+    - No activity_splash.xml defini o background com a cor #00BCD4 e adicionei o logo no centro da tela
+      - Na SplashActivity.java adicionei métodos para esperar por 3 segundos e abrir a próxima activity
+        - Tela de splash funcional ! [commit]
+        
+23/11/2019
+> Desenvolvendo tela de "Meus serviços" {#453}
+  - Criei uma 'basic activity' (uma das opções padrões do AndroidStudio, já vem com um botão no canto direito)
+    - Criei um ícone de "+" na pasta drawable, utilizando biblioteca padrão do AndroidStudio (New > Vector Asset)
+      - No arquivo build.gradle do app, tive que definir o suporte para utilização de componentes vetoriais
+    - Criei uma nova activity em branco para o cadastro de novos serviços
+      - Construí a interface
+        - Na MainActivity.java defini a método para abrir essa tela ao clicar no menu "Meus serviços"
+      - Adicionei um novo módulo de máscara ao projeto (https://github.com/BlacKCaT27/CurrencyEditText) para o tratamento de valores monetários {#454}
+
+24/11/2019
+> Desenvolvendo tela de "Novos serviços" para a tela de "Meus serviços" {#454}
+  - Configurei as definições da máscara de moedas no xml e na classe Java
+  - Adicionei nova classe na pasta 'helper' para tratamento de permissões para carregar galeria de fotos {#456}
+    - No AndroidManifest.xml adicionei tags para usar permissões de acesso
+      - Na NovoServicoActivity.java defini métodos para usar validações de permissão
+  - Para carregar fotos, usei diversos métodos para abrir a galeria, salvar o caminho da imagem, atribuir na ImageView e fazer o upload {#457}
+  - Adicionei um método para inicializar/preencher os combobox (também chamados de "spinners" no Android) {#458}
+
+25/11/2019
+> Trabalhando validação dos campos na tela de "Novos serviços" {#459}
+  - Adicionei método que é chamado ao clicar no botão da interface "Cadastrar serviço", faz as validações de cada campo e chama o método que salvará esse serviço
+
+26/11/2019  
+> Salvando os dados do serviço no Firebase {#460}
+  - Adicionei método para percorrer uma lista com a url de cada foto a ser salva, essa lista é preenchida ao adicionar uma imagem na interface
+    - Adicionei mais um método que fará o devido upload das imagens e informações no banco de dados
+      - Na Servico.java defini a criação de um ID, no método construtor, para cada serviço que será cadastrado {#461}
+    - Upload das fotos do serviço funcional ! [commit]
+  - Adicionei método para salvar os dados do serviço na classe Servico.java, além dos dados preenchidos pelo usuário, também são salvas informações de ID's
+    - Para tratar o fluxo de informações nos filtros de pesquisa, adicionei uma segunda classe que cria outro nó no banco, categorizando a localidade
+      - Upload dos dados do serviço no banco de dados funcional ! [commit]
+> Trabalhando interface de adição do serviço {#462}
+  - Implementei novo módulo no projeto que disponibiliza um "dialog de progresso" para quando o serviço estiver sendo salvo (https://github.com/dybarsky/spots-dialog)
+    - A dialog é executada ao inicio do processo de salvar e fica em execução até finalizar, fazendo o usuário esperar o processo [commit]
+  -
+    
+      
+  
+|| ================================================================================================================================================ ||
+TODO:
+
+> Dev
+  - [completo] Tela de splash
+  - [em andamento] Tela principal com os serviços dos prestadores
+  - [não iniciado] Integração com mapas e suas funcionalidades (???)
+  - [não iniciado] Tela de perfil (???)
+  - [não iniciado] Sistema de sugestões (???)
+  - [não iniciado] Sistema de avaliações (???)
+  
+  - Adicionar progress bar nas activities
+  - Melhorar mascaras das datas e telefones seguindo o tutorial (https://github.com/rtoshiro/MaskFormatter)
+  - Opçoes de e-mail, telefone e endereço alternativos (???)
+  - Correta definição de nomes de métodos, atributos, etc no código
+  - Melhorar tratamento de permissões
+  - Tratamento de portrait/landscape
+  - Tratamento no strings.xml
+  -
+  
+> Bugs e correções
+  - Mover permissão de acesso ao armazenamento interno para a tela de cadastro, deixando apenas uma checagem na tela de novos serviços
+  - Upload de imagens no cadastro deve ser feito após o login do usuário, por causa do token de permição do Storage do Firebase
+  - Mudar tela de cadastro de endereços para dentro da tela de perfil OU retrabalhar a sequencia na hora de cadastrar o usuário
+  - Campo de valor no cadastro de serviços sem limite de numeros e causando overflow
+  - Visualização da data de nascimento salva no banco de dados está estranha
+  - Classe ValidaDados e validação do CPF no cadastro (???)
+  -
+
+
+  
+|| ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ||
+MISC:
+
+> Usar Linear Layouts se for necessário retrabalhar design de alguma tela
+> Explicação da extrutura de salvamento das imagens do serviço no Firebase em {#460}, de 00:00 à 05:00
+>

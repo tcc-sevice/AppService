@@ -44,7 +44,7 @@ import java.util.UUID;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class CadastroActivity extends AppCompatActivity {
+public class CadastroUsuarioActivity extends AppCompatActivity {
 
     private EditText dataNascimento, cpf, nome, sobrenome, email, telefone, senha, confirmarSenha;
     private RadioButton masculino, feminino, outro;
@@ -52,27 +52,26 @@ public class CadastroActivity extends AppCompatActivity {
     private static final int SELECAO_GALERIA = 200;
     private FirebaseAuth autenticacao;
     private StorageReference storageReference;
-    private Usuario usuario;
     private String idFoto;
-    private Uri url;
     private Calendar calendar;
+    private Usuario usuario;
+    private Uri url; // Para acessar fotos do storage?
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_cadastro);
+        setContentView(R.layout.activity_cadastro_usuario);
+
         // Define o título da barra superior:
         getSupportActionBar().setTitle("Sevice - Cadastre seus dados");
-        //
-        inicializaComponente();
-        //
+
+        // Inicialização de componentes necessários da interface
+        inicializarComponentes();
+
+        // Método que faz máscaras (formatação padão) para os campos de CPF, data de nascimento e telefone
         formatMascara();
-        Intent i = getIntent();
 
-        idFoto = UUID.randomUUID().toString();
-
-        storageReference = ConfiguracaoFirebase.getReferenciaStorage();
-      
+        //
         fotoPerfil.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -83,10 +82,8 @@ public class CadastroActivity extends AppCompatActivity {
             }
         });
 
-        calendar = Calendar.getInstance();
-
+        //
         final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
-
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear,
                                   int dayOfMonth) {
@@ -100,15 +97,40 @@ public class CadastroActivity extends AppCompatActivity {
             }
         };
 
+        //Adiciona um evento do tipo listener ao campo 'data de nascimento'. Quando estiver focado,
+        // um calendário será exibido para seleção da data
         dataNascimento.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
-                new DatePickerDialog(CadastroActivity.this, date, calendar
-                        .get(Calendar.YEAR), calendar.get(Calendar.MONTH),
-                        calendar.get(Calendar.DAY_OF_MONTH)).show();
+                if (view.isFocused()){
+                    new DatePickerDialog(CadastroUsuarioActivity.this, date,
+                            calendar.get(Calendar.YEAR),
+                            calendar.get(Calendar.MONTH),
+                            calendar.get(Calendar.DAY_OF_MONTH)).show();
+                }
             }
         });
 
+    }
+
+    // Inicializa componentes necessários da interface ao criar nova instância de cadastro
+    private void inicializarComponentes() {
+        nome = findViewById(R.id.nome);
+        sobrenome = findViewById(R.id.sobrenome);
+        dataNascimento = findViewById(R.id.dataNascimento);
+        cpf = findViewById(R.id.cpf);
+        masculino = findViewById(R.id.masculino);
+        feminino = findViewById(R.id.feminino);
+        outro = findViewById(R.id.outro);
+        email = findViewById(R.id.email);
+        telefone = findViewById(R.id.telefone);
+        senha = findViewById(R.id.senha);
+        confirmarSenha = findViewById(R.id.confirmeSenha);
+        fotoPerfil = findViewById(R.id.fotoPerfil);
+
+        idFoto = UUID.randomUUID().toString();
+        calendar = Calendar.getInstance();
+        storageReference = ConfiguracaoFirebase.getFirebaseStorage();
     }
 
     @Override
@@ -151,35 +173,22 @@ public class CadastroActivity extends AppCompatActivity {
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Toast.makeText(CadastroActivity.this,
-                               "Erro ao fazer Upload da imagem" ,
+                Toast.makeText(CadastroUsuarioActivity.this,
+                               "Erro ao fazer upload da imagem" ,
                                 Toast.LENGTH_SHORT).show();
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
-                Toast.makeText(CadastroActivity.this,
+                // Esconde o texto "Carregar imagem" abaixo da foto de perfil
+                findViewById(R.id.textView_carregarImagem).setVisibility(View.GONE);
+
+                /*Toast.makeText(CadastroUsuarioActivity.this,
                         "Sucesso ao fazer upload da imagem" ,
-                        Toast.LENGTH_SHORT).show();
+                        Toast.LENGTH_SHORT).show();*/
             }
         });
-    }
-
-    private void inicializaComponente() {
-
-        nome = findViewById(R.id.nome);
-        sobrenome = findViewById(R.id.sobrenome);
-        dataNascimento = findViewById(R.id.dataNascimento);
-        cpf = findViewById(R.id.cpf);
-        masculino = findViewById(R.id.masculino);
-        feminino = findViewById(R.id.feminino);
-        outro = findViewById(R.id.outro);
-        email = findViewById(R.id.email);
-        telefone = findViewById(R.id.telefone);
-        senha = findViewById(R.id.senha);
-        confirmarSenha = findViewById(R.id.confirmeSenha);
-        fotoPerfil = findViewById(R.id.fotoPerfil);
     }
 
     private Date formatDate(String dataNascimento) throws ParseException {
@@ -205,15 +214,20 @@ public class CadastroActivity extends AppCompatActivity {
         return false;
     }
 
+    // Define máscaras (formatação padrão) para os campos de CPF, data de nascimento e telefone
     private void formatMascara() {
-
-        SimpleMaskFormatter mascaraTel = new SimpleMaskFormatter("(NN)-NNNNN-NNNN");
-        MaskTextWatcher formatTel = new MaskTextWatcher(telefone, mascaraTel);
-        telefone.addTextChangedListener(formatTel);
 
         SimpleMaskFormatter mascaraCpf = new SimpleMaskFormatter("NNN.NNN.NNN-NN");
         MaskTextWatcher formatCpf = new MaskTextWatcher(cpf, mascaraCpf);
         cpf.addTextChangedListener(formatCpf);
+
+        SimpleMaskFormatter mascaraDataNascimento = new SimpleMaskFormatter("NN/NN/NNNN");
+        MaskTextWatcher formatDataNascimento = new MaskTextWatcher(dataNascimento, mascaraDataNascimento);
+        dataNascimento.addTextChangedListener(formatDataNascimento);
+
+        SimpleMaskFormatter mascaraTel = new SimpleMaskFormatter("(NN) N NNNN-NNNN");
+        MaskTextWatcher formatTel = new MaskTextWatcher(telefone, mascaraTel);
+        telefone.addTextChangedListener(formatTel);
     }
 
     private String preencheUser(String campoNome, String campoSobrenome, String campoCpf, Date campoDataNascimento, String campoEmail, String campoTelefone, String campoSenha, String campoConfirmasSenha) {
@@ -227,11 +241,12 @@ public class CadastroActivity extends AppCompatActivity {
         usuario.setEmail(campoEmail);
         usuario.setTelefone(campoTelefone);
         usuario.setSenha(campoSenha);
-        usuario.setConfirmasSenha(campoConfirmasSenha);
+        usuario.setConfirmaSenha(campoConfirmasSenha);
         usuario.setIdFoto(idFoto);
 
+
         //FirebaseApp.initializeApp(this);
-        autenticacao = ConfiguracaoFirebase.getReferenciaAutenticacao();
+        autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
         autenticacao.createUserWithEmailAndPassword(
                 usuario.getEmail(),
                 usuario.getSenha()).addOnCompleteListener(
@@ -253,17 +268,17 @@ public class CadastroActivity extends AppCompatActivity {
                             try{
                                 throw task.getException();
                             }catch (FirebaseAuthWeakPasswordException e){
-                                erroExcecao = "Digite uma senha mais forte!";
+                                erroExcecao = "Digite uma senha mais forte, use combinações de letras e números !";
                             }catch (FirebaseAuthInvalidCredentialsException e){
-                                erroExcecao = "Por favor, digite um e-mail válido";
+                                erroExcecao = "Por favor, digite um e-mail válido !";
                             }catch (FirebaseAuthUserCollisionException e){
-                                erroExcecao = "Este conta já foi cadastrada";
+                                erroExcecao = "Este e-mail já está cadastrado !";
                             } catch (Exception e) {
                                 erroExcecao = "ao cadastrar usuário: "  + e.getMessage();
                                 e.printStackTrace();
                             }
 
-                            Toast.makeText(CadastroActivity.this,
+                            Toast.makeText(CadastroUsuarioActivity.this,
                                     "Erro: " + erroExcecao ,
                                     Toast.LENGTH_SHORT).show();
 
@@ -272,7 +287,6 @@ public class CadastroActivity extends AppCompatActivity {
                 }
         );
 
-        EnderecoActivity enderecoActivity = new EnderecoActivity();
         return usuario.getId();
     }
 
@@ -282,7 +296,7 @@ public class CadastroActivity extends AppCompatActivity {
         String campoCpf = cpf.getText().toString();
         String campoDataNascimento = dataNascimento.getText().toString();
         String campoEmail = email.getText().toString();
-        String campoTelefone = telefone.getText().toString();;
+        String campoTelefone = telefone.getText().toString();
         String campoSenha = senha.getText().toString();
         String campoConfirmarSenha = confirmarSenha.getText().toString();
 
@@ -294,9 +308,9 @@ public class CadastroActivity extends AppCompatActivity {
             fotoPerfil.buildDrawingCache();
             Bitmap bitmap = fotoPerfil.getDrawingCache();
 
-            Intent intent = new Intent(CadastroActivity.this, EnderecoActivity.class);
+            Intent intent = new Intent(CadastroUsuarioActivity.this, EnderecoActivity.class);
             intent.putExtra("BitmapImage", bitmap);
-            intent.putExtra("idEndereco",id);
+            intent.putExtra("idEndereco", id);
             startActivity(intent);
         }
     }
@@ -307,7 +321,8 @@ public class CadastroActivity extends AppCompatActivity {
 
         if (masculino.isChecked()){
             sexo = "masc";
-        }else if (feminino.isChecked()){
+        }
+        else if (feminino.isChecked()){
             sexo = "fem";
         }
 
@@ -322,21 +337,21 @@ public class CadastroActivity extends AppCompatActivity {
             if( !confirmaSenha.isEmpty()){
                 if(senha.equals(confirmaSenha)){
                 }else{
-                    Toast.makeText( CadastroActivity.this,
+                    Toast.makeText( CadastroUsuarioActivity.this,
                             "As senhas digitadas não correspondem, digite a mesma senha nos dois campos !",
-                            Toast.LENGTH_SHORT).show();
+                            Toast.LENGTH_LONG).show();
 
                     retornaErro = "S";
                 }
             }else{
-                Toast.makeText( CadastroActivity.this,
+                Toast.makeText( CadastroUsuarioActivity.this,
                         "Confirme a senha !",
                         Toast.LENGTH_SHORT).show();
 
                 retornaErro = "S";
             }
         }else{
-            Toast.makeText( CadastroActivity.this,
+            Toast.makeText( CadastroUsuarioActivity.this,
                     "Preencha a senha !",
                     Toast.LENGTH_SHORT).show();
 
@@ -363,67 +378,67 @@ public class CadastroActivity extends AppCompatActivity {
 
         if(!campoNome.isEmpty()){
             if(!campoSobrenome.isEmpty()){
-                if(!campoCpf.isEmpty()){
-                    if( !campoDataNascimento.isEmpty()){
+                if(campoCpf.length() == 14){
+                    if( campoDataNascimento.length() == 10 ){
                         if( masculino.isChecked()||
                             feminino.isChecked()||
                             outro.isChecked()){
                               if( !campoEmail.isEmpty()){
-                                  if( !campoTelefone.isEmpty()){
-                                      if (validaSenha(campoSenha,campoConfirmarSenha)== "N") {
+                                  if( campoTelefone.length() == 16){
+                                      if (validaSenha(campoSenha,campoConfirmarSenha).equals("N")) {
                                           if (validateEmailFormat(campoEmail)){
-                                              if (validaCpf(campoCpf) == "N"){
-                                                  if (ValidaDados.validadeData(campoDataNascimento)=="N") {
+                                              if (validaCpf(campoCpf).equals("N")){
+                                                  if (ValidaDados.validadeData(campoDataNascimento).equals("N")) {
                                                       retornoErro = "N";
                                                   }else{
-                                                      Toast.makeText(CadastroActivity.this,
+                                                      Toast.makeText(CadastroUsuarioActivity.this,
                                                                      "Digite uma data de nascimento válida !",
                                                                       Toast.LENGTH_SHORT).show();
                                                   }
                                               }else{
-                                                     Toast.makeText( CadastroActivity.this,
+                                                     Toast.makeText( CadastroUsuarioActivity.this,
                                                                      "Digite um CPF válido !",
                                                                       Toast.LENGTH_SHORT).show();
                                               }
                                           }else{
-                                              Toast.makeText( CadastroActivity.this,
-                                                      "E-mail invalido !",
+                                              Toast.makeText( CadastroUsuarioActivity.this,
+                                                      "O e-mail digitado é inválido !",
                                                       Toast.LENGTH_SHORT).show();
                                           }
                                       }
                                   }else{
-                                      Toast.makeText( CadastroActivity.this,
-                                                      "Preencha o Telefone !",
+                                      Toast.makeText( CadastroUsuarioActivity.this,
+                                                      "Preencha o telefone !",
                                                        Toast.LENGTH_SHORT).show();
                                     }
                                 }else{
-                                    Toast.makeText( CadastroActivity.this,
-                                                    "Preencha o email !",
+                                    Toast.makeText( CadastroUsuarioActivity.this,
+                                                    "Preencha seu e-mail !",
                                                      Toast.LENGTH_SHORT).show();
                                 }
                             }else{
-                                Toast.makeText( CadastroActivity.this,
-                                                "Preencha o sexo !",
+                                Toast.makeText( CadastroUsuarioActivity.this,
+                                                "Preencha seu sexo !",
                                                 Toast.LENGTH_SHORT).show();
                             }
                     }else{
-                        Toast.makeText( CadastroActivity.this,
+                        Toast.makeText( CadastroUsuarioActivity.this,
                                         "Preencha a data de nascimento !",
                                         Toast.LENGTH_SHORT).show();
                     }
                 }else{
-                    Toast.makeText( CadastroActivity.this,
-                                    "Preencha o CPF !",
+                    Toast.makeText( CadastroUsuarioActivity.this,
+                                    "Preencha seu CPF !",
                                     Toast.LENGTH_SHORT).show();
                 }
             }else{
-                Toast.makeText( CadastroActivity.this,
-                                "Preencha o sobrenome !",
+                Toast.makeText( CadastroUsuarioActivity.this,
+                                "Preencha seu sobrenome !",
                                 Toast.LENGTH_SHORT).show();
             }
         }else{
-            Toast.makeText( CadastroActivity.this,
-                            "Preencha o nome !",
+            Toast.makeText( CadastroUsuarioActivity.this,
+                            "Preencha seu nome !",
                             Toast.LENGTH_SHORT).show();
         }
 

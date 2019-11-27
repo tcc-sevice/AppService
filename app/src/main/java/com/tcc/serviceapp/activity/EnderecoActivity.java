@@ -1,5 +1,7 @@
 package com.tcc.serviceapp.activity;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -7,8 +9,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.rtoshiro.util.format.SimpleMaskFormatter;
 import com.github.rtoshiro.util.format.text.MaskTextWatcher;
@@ -28,7 +28,7 @@ public class EnderecoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_endereco);
         // Define o título da barra superior:
-        getSupportActionBar().setTitle("Sevice - Cadastre seus dados");
+        getSupportActionBar().setTitle("Sevice - Cadastre seu endereço");
         inicializaComponente();
         formatMascara();
         Intent intent = getIntent();

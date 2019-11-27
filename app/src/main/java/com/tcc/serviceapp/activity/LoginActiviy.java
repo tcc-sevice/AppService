@@ -23,52 +23,59 @@ public class LoginActiviy extends AppCompatActivity {
     // Atributos de manipulação dos componentes da interface
     private EditText email, senha;
     private Button logar;
-    //
-    private Usuario usuario;
-    // Atributo para manipulação da autenticação do Firebase
-    private FirebaseAuth autenticacao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        // Esconde a barra superior:
+
+        // Esconde a barra superior
         getSupportActionBar().hide();
-        //
+        // Configurações iniciais
         inicializaComponente();
-        // Método chamado com o clique do botão "Logar" da tela de login
+
+        // Método chamado com o clique do botão "Entrar" da tela de login
         logar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String campoEmail = email.getText().toString();
                 String campoSenha = senha.getText().toString();
 
-                // Validações para campos não vazios
+                // Validações de campos não vazios
                 if (!campoEmail.isEmpty()) {
                     if (!campoSenha.isEmpty()) {
-                        usuario = new Usuario();
+                        Usuario usuario = new Usuario();
                         usuario.setEmail(campoEmail);
                         usuario.setSenha(campoSenha);
                         validarLogin(usuario);
-                    } else {
-                        // O Toast é uma pequena mensagem momentânea no rodapé do App
+                    }
+                    else {
+                        // Mensagem momentânea no rodapé do App
                         Toast.makeText(LoginActiviy.this,
-                                "Preencha a senha !",
+                                "Digite sua senha !",
                                 Toast.LENGTH_SHORT).show();
                     }
-                } else {
+                }
+                else {
                     Toast.makeText(LoginActiviy.this,
-                            "Preencha o email !",
+                            "Digite seu e-mail !",
                             Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
 
+    // Inicializa atributos dessa classe com os componentes da interface
+    public void inicializaComponente() {
+        email = findViewById(R.id.emailLogin);
+        senha = findViewById(R.id.senhaLogin);
+        logar = findViewById(R.id.login);
+    }
+
     // Método para fazer a validação dos dados para login
     public void validarLogin(Usuario usuario){
-        // Recebe instancia do serviço de autenticação do Firebase
-        autenticacao = ConfiguracaoFirebase.getReferenciaAutenticacao();
+        // Objeto para manipulação da autenticação do Firebase
+        FirebaseAuth autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
         // Usa o método do Firebase de autenticação por email e senha
         autenticacao.signInWithEmailAndPassword(
                 usuario.getEmail(),
@@ -79,11 +86,12 @@ public class LoginActiviy extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
                             Toast.makeText(LoginActiviy.this,
-                                    "Login com sucesso !",
+                                    "Seja bem-vindo !",
                                     Toast.LENGTH_SHORT).show();
 
-                            Intent intent = new Intent(LoginActiviy.this, MainActivity.class);
-                            startActivity(intent);
+                            // Direciona para a tela principal ao logar
+                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                            // Finaliza a instância da tela de login
                             finish();
                         }
                         else{
@@ -96,17 +104,9 @@ public class LoginActiviy extends AppCompatActivity {
         );
     }
 
-    // Método para abrir a tela de cadastro ao clicar no botão "Cadastrar-se" da tela de Login
+    // Método para abrir a tela de cadastro ao clicar no botão "Cadastrar-se"
     public void abrirCadastro(View view){
-        Intent intent = new Intent(LoginActiviy.this, CadastroActivity.class);
-        startActivity(intent);
-    }
-
-    // Inicializa atributos dessa classe com os dados dos componentes da interface
-    public void inicializaComponente() {
-        email = findViewById(R.id.emailLogin);
-        senha = findViewById(R.id.senhaLogin);
-        logar = findViewById(R.id.login);
+        startActivity(new Intent(getApplicationContext(), CadastroUsuarioActivity.class));
     }
 
 }

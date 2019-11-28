@@ -21,8 +21,11 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.blackcat.currencyedittext.CurrencyEditText;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.tcc.serviceapp.R;
@@ -290,34 +293,33 @@ public class CadastroServicoActivity extends AppCompatActivity implements View.O
 
         // Faz o upload do arquivo de imagem
         UploadTask uploadTask = imagemServico.putFile(Uri.parse(urlString));
-        // Em caso de sucesso
-        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+        uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
             @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-                // String com o endereço completo da imagem no Firebase
-                String urlConvertida = taskSnapshot.getMetadata().getReference().getDownloadUrl().toString();
-
-                listaUrlFotos.add(urlConvertida);
-                // Condição para o upload do número de fotos adicionadas
-                if (totalFotos == listaUrlFotos.size()){
-                    servico.setFotos(listaUrlFotos);
-                    // Salva informações do serviço no banco de dados
-                    servico.salvar();
-                    // Interrompe o dialog de progresso
-                    dialog.dismiss();
-                    // Finaliza a activity
-                    finish();
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                if (!task.isSuccessful()){
+                    throw task.getException();
+                }
+                return imagemServico.getDownloadUrl();
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                if (task.isSuccessful()){
+                    Uri downloadUrl = task.getResult();
+                    listaUrlFotos.add(downloadUrl.toString());
+                    // Condição para o upload do número de fotos adicionadas
+                    if (totalFotos == listaUrlFotos.size()){
+                        servico.setFotos(listaUrlFotos);
+                        // Salva informações do serviço no banco de dados
+                        servico.salvar();
+                        // Interrompe o dialog de progresso
+                        dialog.dismiss();
+                        // Finaliza a activity
+                        finish();
+                    }
                 }
             }
-        // Em caso de erro
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                exibirMensagemErro("Falha ao fazer upload de imagem");
-            }
         });
-
     }
 
 }

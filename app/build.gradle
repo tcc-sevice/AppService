@@ -49,8 +49,11 @@ dependencies {
     // Dependencia circle imageview
     implementation 'de.hdodenhof:circleimageview:3.0.1'
 
-    // Dependencia de dialog de progresso
+    // Dependencia dialog de progresso
     implementation 'com.github.d-max:spots-dialog:1.1@aar'
+
+    // Dependencia picasso
+    implementation 'com.squareup.picasso:picasso:2.71828'
 
 }
 //Dependencias Firebase

@@ -54,9 +54,18 @@ LOGS:
 > Trabalhando interface de adição do serviço {#462}
   - Implementei novo módulo no projeto que disponibiliza um "dialog de progresso" para quando o serviço estiver sendo salvo (https://github.com/dybarsky/spots-dialog)
     - A dialog é executada ao inicio do processo de salvar e fica em execução até finalizar, fazendo o usuário esperar o processo [commit]
-  -
-    
+
+27/11/2019
+> Desenvolvendo visualização de serviços na tela de "Meus serviços" {#463 + #464}
+  - Ajustei o componente 'recycler view' no 'content_meus_servico.xml', esse que receberá cada item como uma lista
+    - Criei uma nova classe para usar como "adapter", onde é definido a estrutura de cada item serviço
+      - Criei um novo xml para definir o layout
+        - Adicionei um novo módulo ao projeto (https://github.com/square/picasso) para caching de imagens
+          - Adicionei um método para recuperar as informações do banco de dados na classe MeusServicosActivity.java e adicionar ao recycler view da interface
+            - Visualização/listagem dos serviços cadastrados, na tela de "Meus serviços", funcional ! [commit]
+> 
       
+  
   
 || ================================================================================================================================================ ||
 TODO:
@@ -76,6 +85,7 @@ TODO:
   - Melhorar tratamento de permissões
   - Tratamento de portrait/landscape
   - Tratamento no strings.xml
+  - Tratamento da "imagem principal" no cadastro de serviços
   -
   
 > Bugs e correções

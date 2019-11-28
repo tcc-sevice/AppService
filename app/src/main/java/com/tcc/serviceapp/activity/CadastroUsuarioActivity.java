@@ -51,7 +51,6 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
     private CircleImageView fotoPerfil;
     private static final int SELECAO_GALERIA = 200;
     private FirebaseAuth autenticacao;
-    private StorageReference storageReference;
     private String idFoto;
     private Calendar calendar;
     private Usuario usuario;
@@ -127,10 +126,8 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
         senha = findViewById(R.id.senha);
         confirmarSenha = findViewById(R.id.confirmeSenha);
         fotoPerfil = findViewById(R.id.fotoPerfil);
-
-        idFoto = UUID.randomUUID().toString();
         calendar = Calendar.getInstance();
-        storageReference = ConfiguracaoFirebase.getFirebaseStorage();
+
     }
 
     @Override
@@ -152,43 +149,11 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
                 if (imagem != null) {
 
                     fotoPerfil.setImageBitmap(imagem);
-                    carregaFoto(imagem);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-    }
-
-    private void carregaFoto(Bitmap imagem) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        imagem.compress(Bitmap.CompressFormat.JPEG, 70, baos);
-        byte[] dadosImagem = baos.toByteArray();
-
-        StorageReference imageRef = storageReference.child("Imagens")
-                                                    .child("Perfil")
-                                                    .child( idFoto + ".jpeg");
-
-        UploadTask uploadTask = imageRef.putBytes(dadosImagem);
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(CadastroUsuarioActivity.this,
-                               "Erro ao fazer upload da imagem" ,
-                                Toast.LENGTH_SHORT).show();
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-                // Esconde o texto "Carregar imagem" abaixo da foto de perfil
-                findViewById(R.id.textView_carregarImagem).setVisibility(View.GONE);
-
-                /*Toast.makeText(CadastroUsuarioActivity.this,
-                        "Sucesso ao fazer upload da imagem" ,
-                        Toast.LENGTH_SHORT).show();*/
-            }
-        });
     }
 
     private Date formatDate(String dataNascimento) throws ParseException {
@@ -230,66 +195,6 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
         telefone.addTextChangedListener(formatTel);
     }
 
-    private String preencheUser(String campoNome, String campoSobrenome, String campoCpf, Date campoDataNascimento, String campoEmail, String campoTelefone, String campoSenha, String campoConfirmasSenha) {
-        String sexo = validaSexo();
-        final Usuario usuario = new Usuario();
-        usuario.setNome(campoNome);
-        usuario.setSobrenome(campoSobrenome);
-        usuario.setCpf(campoCpf);
-        usuario.setDataNascimento(campoDataNascimento);
-        usuario.setSexo(sexo);
-        usuario.setEmail(campoEmail);
-        usuario.setTelefone(campoTelefone);
-        usuario.setSenha(campoSenha);
-        usuario.setConfirmaSenha(campoConfirmasSenha);
-        usuario.setIdFoto(idFoto);
-
-
-        //FirebaseApp.initializeApp(this);
-        autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
-        autenticacao.createUserWithEmailAndPassword(
-                usuario.getEmail(),
-                usuario.getSenha()).addOnCompleteListener(
-                new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-
-                        if( task.isSuccessful() ){
-                            try {
-                                String idUsuario =  task.getResult().getUser().getUid();
-                                usuario.setId(idUsuario);
-                                usuario.Salvar(usuario);
-                            }catch (Exception e){
-                                e.printStackTrace();
-                            }
-                        }else {
-
-                            String erroExcecao = "";
-                            try{
-                                throw task.getException();
-                            }catch (FirebaseAuthWeakPasswordException e){
-                                erroExcecao = "Digite uma senha mais forte, use combinações de letras e números !";
-                            }catch (FirebaseAuthInvalidCredentialsException e){
-                                erroExcecao = "Por favor, digite um e-mail válido !";
-                            }catch (FirebaseAuthUserCollisionException e){
-                                erroExcecao = "Este e-mail já está cadastrado !";
-                            } catch (Exception e) {
-                                erroExcecao = "ao cadastrar usuário: "  + e.getMessage();
-                                e.printStackTrace();
-                            }
-
-                            Toast.makeText(CadastroUsuarioActivity.this,
-                                    "Erro: " + erroExcecao ,
-                                    Toast.LENGTH_SHORT).show();
-
-                        }
-                    }
-                }
-        );
-
-        return usuario.getId();
-    }
-
     public void abrirEndereco(View view) throws ParseException {
         String campoNome = nome.getText().toString();
         String campoSobrenome = sobrenome.getText().toString();
@@ -299,18 +204,27 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
         String campoTelefone = telefone.getText().toString();
         String campoSenha = senha.getText().toString();
         String campoConfirmarSenha = confirmarSenha.getText().toString();
+        String campoSexo = validaSexo();
 
         if (validaCampos( campoNome, campoSobrenome, campoCpf,campoDataNascimento,campoEmail, campoTelefone, campoSenha, campoConfirmarSenha) == "N") {
 
-            String id = preencheUser( campoNome, campoSobrenome, campoCpf, formatDate(campoDataNascimento), campoEmail,
-                                      campoTelefone, campoSenha, campoConfirmarSenha);
+            Date dataNascimento = formatDate(campoDataNascimento);
 
             fotoPerfil.buildDrawingCache();
             Bitmap bitmap = fotoPerfil.getDrawingCache();
 
             Intent intent = new Intent(CadastroUsuarioActivity.this, EnderecoActivity.class);
             intent.putExtra("BitmapImage", bitmap);
-            intent.putExtra("idEndereco", id);
+            intent.putExtra("email", campoEmail);
+            intent.putExtra("senha", campoSenha);
+            intent.putExtra("nome", campoNome);
+            intent.putExtra("sobrenome", campoSobrenome);
+            intent.putExtra("cpf", campoCpf);
+            intent.putExtra("dataNascimento",dataNascimento);
+            intent.putExtra("telefone", campoTelefone);
+            intent.putExtra("confirmarSenha", campoConfirmarSenha);
+            intent.putExtra("sexo", campoSexo);
+
             startActivity(intent);
         }
     }

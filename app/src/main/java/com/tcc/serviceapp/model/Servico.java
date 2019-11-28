@@ -1,6 +1,7 @@
 package com.tcc.serviceapp.model;
 
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.storage.StorageReference;
 import com.tcc.serviceapp.helper.ConfiguracaoFirebase;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public class Servico {
     }
 
     // Salva os dados do serviço no banco de dados do Firebase
-    public void salvar(){
+    public void salvarServico(){
         //TODO fazer uma classe separada apenas para dados do usuario ("UsuarioFirebase", por exemplo) caso for necessário usar muitos dados
 
         // Recebe o ID do usuário conectado
@@ -37,23 +38,65 @@ public class Servico {
 
         // Atribui os valores
         servicoRef.child(idUsuario)
-                .child(this.getIdServico())
+                .child(getIdServico())
                 .setValue(this);
 
-        salvarAnuncioPublico();
+        salvarServicoPublico();
     }
-
-    public void salvarAnuncioPublico(){
+    // Salva os dados do serviços em um outro nó para utilizar na função de filtragem
+    public void salvarServicoPublico(){
 
         // Referencia do banco de dados
         DatabaseReference servicoRef = ConfiguracaoFirebase.getFirebase()
                 .child("servicos_publicos");
 
         // Atribui os valores
-        servicoRef.child(this.getLocalidade())
+        servicoRef.child(getLocalidade())
+                  .child(getCategoria())
+                  .child(getIdServico())
+                  .setValue(this);
+    }
+
+    // Exclui um serviços selecionado pelo usuário
+    public void removerServico(){
+        // Recebe o ID do usuário conectado
+        String idUsuario = ConfiguracaoFirebase.getIdUsuario();
+
+        // Referencia do banco de dados
+        DatabaseReference servicoRef = ConfiguracaoFirebase.getFirebase()
+                .child("servicos_cadastrados")
+                .child(idUsuario)
+                .child(getIdServico());
+
+        // Exclui os dados no nó referenciado
+        servicoRef.removeValue();
+
+        removerServicoPublico();
+        removerFotosStorage();
+    }
+    // Exclui um serviços selecionado pelo usuário
+    public void removerServicoPublico(){
+        // Referencia do banco de dados
+        DatabaseReference servicoRef = ConfiguracaoFirebase.getFirebase()
+                .child("servicos_publicos")
+                .child(getLocalidade())
                 .child(getCategoria())
-                .child(this.getIdServico())
-                .setValue(this);
+                .child(getIdServico());
+
+        // Exclui os dados no nó referenciado
+        servicoRef.removeValue();
+    }
+    // Exclui fotos do serviço no Storage
+    public void removerFotosStorage(){
+        List<String> fotos = getFotos();
+        for (int i = 0; i < fotos.size(); i++){
+            StorageReference storageReference = ConfiguracaoFirebase.getFirebaseStorage()
+                    .child("Imagens")
+                    .child("Servicos")
+                    .child(getIdServico())
+                    .child("imagemServico"+i);
+            storageReference.delete();
+        }
     }
 
     public String getIdServico() {

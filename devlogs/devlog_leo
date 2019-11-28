@@ -63,7 +63,15 @@ LOGS:
         - Adicionei um novo módulo ao projeto (https://github.com/square/picasso) para caching de imagens
           - Adicionei um método para recuperar as informações do banco de dados na classe MeusServicosActivity.java e adicionar ao recycler view da interface
             - Visualização/listagem dos serviços cadastrados, na tela de "Meus serviços", funcional ! [commit]
-> 
+
+28/11/2019            
+> Desenvolvendo função de excluir serviços cadastrados {#465}
+  - Adicionei nova classe para lidar com eventos de clique distintos na interface
+    - Na classe MeusServicosActivity.java defini um método de tratamento de clique
+      - Dentro deste método, adicionei um dialog de Confirmação da exclusão
+    - Na classe Servico.java defini um método de exclusão das informações de determinado serviço no banco de dados e de exclusão das fotos no Storage
+      - Função de exclusão do serviço funcional !
+>
       
   
   

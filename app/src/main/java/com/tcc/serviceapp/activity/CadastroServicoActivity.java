@@ -23,8 +23,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.blackcat.currencyedittext.CurrencyEditText;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -311,7 +309,7 @@ public class CadastroServicoActivity extends AppCompatActivity implements View.O
                     if (totalFotos == listaUrlFotos.size()){
                         servico.setFotos(listaUrlFotos);
                         // Salva informações do serviço no banco de dados
-                        servico.salvar();
+                        servico.salvarServico();
                         // Interrompe o dialog de progresso
                         dialog.dismiss();
                         // Finaliza a activity

@@ -51,8 +51,6 @@ public class MeusServicosActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //TODO metodo inicializarComponentes(), se necessario mais atributos
-
         // Método de manipulação do botão de "voltar" no canto da tela
         // fab == Floating Action Button
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -117,7 +115,7 @@ public class MeusServicosActivity extends AppCompatActivity {
     // Recupera informações de serviços do usuário conectado
     private void recuperarServicos(){
 
-        // Dialog de progresso do salvamento. Executa até receber o método dismiss()
+        // Dialog de progresso do carregamento. Executa até receber o método dismiss()
         dialog = new SpotsDialog.Builder()
                 .setContext(this)
                 .setMessage("Carregando seus serviços")

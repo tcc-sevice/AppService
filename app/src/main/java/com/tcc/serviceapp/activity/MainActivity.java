@@ -1,21 +1,44 @@
 package com.tcc.serviceapp.activity;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.tcc.serviceapp.R;
+import com.tcc.serviceapp.adapter.AdapterServicos;
 import com.tcc.serviceapp.helper.ConfiguracaoFirebase;
+import com.tcc.serviceapp.model.Servico;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import dmax.dialog.SpotsDialog;
 
 public class MainActivity extends AppCompatActivity {
 
+    //Atributos
     private FirebaseAuth autenticacao;
+    private RecyclerView recyclerView;
+    private Button button_localidade, button_categoria;
+    private AdapterServicos adapterServicos;
+    private List<Servico> listaServicos = new ArrayList<>();
+    private DatabaseReference servicosPublicosRef;
+    private AlertDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +47,59 @@ public class MainActivity extends AppCompatActivity {
 
         // Configuração inicial do objeto de autenticação do Firebase
         autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
+        servicosPublicosRef = ConfiguracaoFirebase.getFirebase()
+                .child("servicos_publicos");
+
+        // Configurações do RecyclerView
+        recyclerView = findViewById(R.id.recyclerView_servicosPublicos);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setHasFixedSize(true);
+        adapterServicos = new AdapterServicos(listaServicos, this);
+        recyclerView.setAdapter(adapterServicos);
+
+        // Recupera os dados do nó "servicos_publicos" no banco de dados
+        recuperarServicosPublicos();
+    }
+
+    // Recupera os dados do nó "servicos_publicos" no banco de dados
+    public void recuperarServicosPublicos(){
+        // Dialog de progresso do carregamento. Executa até receber o método dismiss()
+        dialog = new SpotsDialog.Builder()
+                .setContext(this)
+                .setMessage("Aguarde")
+                .setCancelable(false)
+                .build();
+        dialog.show();
+
+        listaServicos.clear();
+        servicosPublicosRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // Percorre cada nó do banco de dados, iterando cada "filho"
+                for (DataSnapshot localidades: dataSnapshot.getChildren()){
+                    for (DataSnapshot categorias: localidades.getChildren()){
+                        for (DataSnapshot servicos: categorias.getChildren()){
+                            // Atribui o serviço recuperado a um objeto Serviço
+                            Servico servico = servicos.getValue(Servico.class);
+                            // Adiciona serviços a uma lista
+                            listaServicos.add(servico);
+
+                        }
+                    }
+                }
+
+                Collections.reverse(listaServicos);
+                adapterServicos.notifyDataSetChanged();
+
+                // Interrompe o dialog de progresso
+                dialog.dismiss();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     // Carrega os menus do actionBar
@@ -73,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
                 invalidateOptionsMenu();
                 break;
         }
-
         return super.onOptionsItemSelected(item);
     }
+
 }

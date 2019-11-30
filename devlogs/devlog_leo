@@ -70,8 +70,14 @@ LOGS:
     - Na classe MeusServicosActivity.java defini um método de tratamento de clique
       - Dentro deste método, adicionei um dialog de Confirmação da exclusão
     - Na classe Servico.java defini um método de exclusão das informações de determinado serviço no banco de dados e de exclusão das fotos no Storage
-      - Função de exclusão do serviço funcional !
->
+      - Função de exclusão do serviço funcional ! [commit]
+
+30/11/2019
+> Desenvolvendo tela principal {#466}
+  - Troquei o ConstraintLayout para LinearLayout
+    - Adicionei os elementos da interface na activity_main.xml
+      - Adicionei métodos de configuração, acesso ao banco e adição de itens na recyclerView da tela na MainActivity.java
+        - Visualização dos serviços na tela principal funcional ! [commit]
       
   
   

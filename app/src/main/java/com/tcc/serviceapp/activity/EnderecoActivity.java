@@ -1,9 +1,12 @@
 package com.tcc.serviceapp.activity;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -12,15 +15,36 @@ import android.widget.Toast;
 
 import com.github.rtoshiro.util.format.SimpleMaskFormatter;
 import com.github.rtoshiro.util.format.text.MaskTextWatcher;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.tcc.serviceapp.R;
+import com.tcc.serviceapp.helper.ConfiguracaoFirebase;
 import com.tcc.serviceapp.model.Endereco;
+import com.tcc.serviceapp.model.Usuario;
+
+import java.io.ByteArrayOutputStream;
+import java.util.Date;
+import java.util.UUID;
 
 public class EnderecoActivity extends AppCompatActivity {
 
     private EditText cidade, rua, bairro, numero, complemento, cep;
     private ImageView fotoPerfil;
     private Endereco endereco;
-    private String idEndereco;
+    private String idFoto;
+    private FirebaseAuth autenticacao;
+    private StorageReference storageReference;
+    private Usuario usuario;
+    private Uri uri;
 
 
     @Override
@@ -32,9 +56,22 @@ public class EnderecoActivity extends AppCompatActivity {
         inicializaComponente();
         formatMascara();
         Intent intent = getIntent();
-        Bitmap bitmap = (Bitmap) intent.getParcelableExtra("BitmapImage");
-        idEndereco =  intent.getParcelableExtra("idEndereco");
-        fotoPerfil.setImageBitmap(bitmap);
+        try {
+            Bundle bundle = getIntent().getExtras();
+            if (bundle != null){
+                try {
+                    byte[] imageInByte = bundle.getByteArray("BitmapImage");
+                    Bitmap bmp = BitmapFactory.decodeByteArray(imageInByte,0,imageInByte.length);
+                    fotoPerfil = findViewById(R.id.fotoPerfil);
+                    fotoPerfil.setImageBitmap(bmp);
+                }catch (Exception e){}
+            }
+        }catch (Exception e){
+            Toast.makeText(this,""+e,Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+        uri = (Uri) intent.getParcelableExtra("url");
+        usuario = (Usuario) intent.getSerializableExtra("usuario");
     }
 
     public void inicializaComponente() {
@@ -46,6 +83,8 @@ public class EnderecoActivity extends AppCompatActivity {
         complemento = findViewById(R.id.complemento);
         cep = findViewById(R.id.cep);
         fotoPerfil = findViewById(R.id.fotoPerfil);
+        idFoto = UUID.randomUUID().toString();
+        storageReference = ConfiguracaoFirebase.getFirebaseStorage();
 
     }
 
@@ -71,12 +110,15 @@ public class EnderecoActivity extends AppCompatActivity {
         enderecoPersisty = preenchaEndereco(campoCidade, campoBairro, campoRua, campoNumero, campoCep, campoComplemento);
 
         try {
+            String idEndereco = preencheUser(usuario);
             enderecoPersisty.setId(idEndereco);
             enderecoPersisty.Salvar(enderecoPersisty);
 
             Toast.makeText(this,
                     "Cadastro realizado com sucesso !",
                     Toast.LENGTH_SHORT).show();
+
+            carregaFoto(uri);
 
             Intent login = new Intent(EnderecoActivity.this, LoginActiviy.class);
             startActivity(login);
@@ -89,6 +131,76 @@ public class EnderecoActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+    }
+
+    private void carregaFoto(Uri uri) {
+
+        StorageReference imageRef = storageReference.child("Imagens")
+                .child("Perfil")
+                .child( idFoto + ".jpeg");
+        imageRef.putFile(uri).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(EnderecoActivity.this,
+                        "Erro ao fazer upload da imagem" ,
+                        Toast.LENGTH_SHORT).show();
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                /*Toast.makeText(CadastroUsuarioActivity.this,
+                        "Sucesso ao fazer upload da imagem" ,
+                        Toast.LENGTH_SHORT).show();*/
+            }
+        });
+    }
+
+    private String preencheUser(Usuario usuario){
+
+        //FirebaseApp.initializeApp(this);
+        autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
+        autenticacao.createUserWithEmailAndPassword(
+                usuario.getEmail(),
+                usuario.getSenha()).addOnCompleteListener(
+                new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+
+                        if( task.isSuccessful() ){
+                            try {
+                                String idUsuario =  task.getResult().getUser().getUid();
+                                usuario.setId(idUsuario);
+                                usuario.Salvar(usuario);
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+                        }else {
+
+                            String erroExcecao = "";
+                            try{
+                                throw task.getException();
+                            }catch (FirebaseAuthWeakPasswordException e){
+                                erroExcecao = "Digite uma senha mais forte, use combinações de letras e números !";
+                            }catch (FirebaseAuthInvalidCredentialsException e){
+                                erroExcecao = "Por favor, digite um e-mail válido !";
+                            }catch (FirebaseAuthUserCollisionException e){
+                                erroExcecao = "Este e-mail já está cadastrado !";
+                            } catch (Exception e) {
+                                erroExcecao = "ao cadastrar usuário: "  + e.getMessage();
+                                e.printStackTrace();
+                            }
+
+                            Toast.makeText(EnderecoActivity.this,
+                                    "Erro: " + erroExcecao ,
+                                    Toast.LENGTH_SHORT).show();
+
+                        }
+                    }
+                }
+        );
+
+        return usuario.getId();
     }
 
     private Endereco preenchaEndereco(String campoCidade, String campoBairro, String campoRua, String campoNumero,

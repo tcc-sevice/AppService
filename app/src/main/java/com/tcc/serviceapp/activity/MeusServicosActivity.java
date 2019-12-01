@@ -61,7 +61,10 @@ public class MeusServicosActivity extends AppCompatActivity {
                 startActivity(new Intent(getApplicationContext(), CadastroServicoActivity.class));
             }
         });
+
+        // Configurações action bar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp);
 
         // Configurações do RecyclerView
         recyclerViewServicos.setLayoutManager(new LinearLayoutManager(this));
@@ -78,8 +81,7 @@ public class MeusServicosActivity extends AppCompatActivity {
                         this, recyclerViewServicos,
                         new RecyclerItemClickListener.OnItemClickListener() {
                             @Override
-                            public void onItemClick(View view, int position) {
-                            }
+                            public void onItemClick(View view, int position) {}
 
                             // Chamado caso o usuario mantenha o item pressionado
                             @Override
@@ -108,8 +110,7 @@ public class MeusServicosActivity extends AppCompatActivity {
                             }
 
                             @Override
-                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            }
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {}
                         }
                 )
         );

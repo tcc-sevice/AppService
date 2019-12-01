@@ -87,8 +87,14 @@ LOGS:
 > Desenvolvendo filtro de categoria na tela principal {#468}
   - Reaproveitei os métodos do filtro por localidade para adicionar as mesmas funções para filtragem por categorias
     - Filtragem por categoria funcional ! [commit]
+> Desenvolvendo tela de detalhes do serviço {#469 e #470}
+  - Adicionei eventos de clique no recyclerView da tela, com o método addOnItemTouchListener()
+    - Criei uma nova activity para a tela de detalhes
+      - Adicionei novo módulo ao projeto, "https://github.com/sayyam/carouselview" para visualização de imagens em sequencia
+        - Construi a inteface de detalhes do serviço e adicionei os métodos necessários para preechimento dos dados na tela
+          - Visualização dos detalhes do serviço funcional ! [commit]
       
-  
+      
   
 || ================================================================================================================================================ ||
 TODO:

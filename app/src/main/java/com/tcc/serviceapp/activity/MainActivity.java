@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
@@ -25,6 +26,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.tcc.serviceapp.R;
 import com.tcc.serviceapp.adapter.AdapterServicos;
 import com.tcc.serviceapp.helper.ConfiguracaoFirebase;
+import com.tcc.serviceapp.helper.RecyclerItemClickListener;
 import com.tcc.serviceapp.model.Servico;
 
 import java.util.ArrayList;
@@ -73,6 +75,30 @@ public class MainActivity extends AppCompatActivity {
 
         // Recupera os dados do nó "servicos_publicos" no banco de dados
         recuperarServicosPublicos();
+
+        // Adiciona evento de cliques nos serviços do recyclerView
+        recyclerView.addOnItemTouchListener(
+                new RecyclerItemClickListener(
+                        this,
+                        recyclerView,
+                        new RecyclerItemClickListener.OnItemClickListener() {
+                            // Executa ao clicar uma unica vez sobre um dos serviços
+                            @Override
+                            public void onItemClick(View view, int position) {
+                                // Atribui o serviço selecionado a um objeto serviço
+                                Servico servicoSelecionado = listaServicos.get(position);
+                                // Direciona para a tela de detalhes, enviando o serviço selecionado
+                                Intent intent = new Intent(MainActivity.this, DetalhesProdutoActivity.class);
+                                intent.putExtra("servicoSelecionado", servicoSelecionado);
+                                startActivity(intent);
+                            }
+                            @Override
+                            public void onLongItemClick(View view, int position) {}
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {}
+                        }
+                )
+        );
     }
 
     // Recupera os dados do nó "servicos_publicos" no banco de dados

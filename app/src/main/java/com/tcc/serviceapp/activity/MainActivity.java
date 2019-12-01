@@ -1,11 +1,15 @@
 package com.tcc.serviceapp.activity;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -34,16 +38,24 @@ public class MainActivity extends AppCompatActivity {
     //Atributos
     private FirebaseAuth autenticacao;
     private RecyclerView recyclerView;
-    private Button button_localidade, button_categoria;
+    private Button button_localidade, button_categoria; //TODO excluir linha?
     private AdapterServicos adapterServicos;
     private List<Servico> listaServicos = new ArrayList<>();
     private DatabaseReference servicosPublicosRef;
     private AlertDialog dialog;
+    private String filtroLocalidade = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Configurações dialog de progresso
+        dialog = new SpotsDialog.Builder()
+                .setContext(this)
+                .setMessage("Aguarde")
+                .setCancelable(false)
+                .build();
 
         // Configuração inicial do objeto de autenticação do Firebase
         autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
@@ -64,11 +76,6 @@ public class MainActivity extends AppCompatActivity {
     // Recupera os dados do nó "servicos_publicos" no banco de dados
     public void recuperarServicosPublicos(){
         // Dialog de progresso do carregamento. Executa até receber o método dismiss()
-        dialog = new SpotsDialog.Builder()
-                .setContext(this)
-                .setMessage("Aguarde")
-                .setCancelable(false)
-                .build();
         dialog.show();
 
         listaServicos.clear();
@@ -94,11 +101,75 @@ public class MainActivity extends AppCompatActivity {
                 // Interrompe o dialog de progresso
                 dialog.dismiss();
             }
-
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
+        });
+    }
 
+    // Chamado pelo botão da interface de filtragem por localidade
+    public void filtrarPorLocalidade(View view){
+        // Configurações do dialog para seleção de local
+        AlertDialog.Builder dialogLocalidade = new AlertDialog.Builder(this);
+        View viewSpinner = getLayoutInflater().inflate(R.layout.dialog_spinner, null);
+
+        // Configuração spinner de locais
+        Spinner spinnerLocalidade = viewSpinner.findViewById(R.id.spinner_filtro);
+        String[] cidades = getResources().getStringArray(R.array.localidade);
+        ArrayAdapter<String> adapterLocalidade = new ArrayAdapter<String>(
+                this, android.R.layout.simple_spinner_item, cidades);
+        adapterLocalidade.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerLocalidade.setAdapter(adapterLocalidade);
+
+        dialogLocalidade.setTitle("Selecione a opção desejada:");
+        dialogLocalidade.setView(viewSpinner);
+        // Ao confirmar a dialog
+        dialogLocalidade.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Recupera o item do spinner ao clicar em OK
+                filtroLocalidade = spinnerLocalidade.getSelectedItem().toString();
+                recuperarServicosPorLocalidade();
             }
+        });
+        // Ao cancelar a dialog
+        dialogLocalidade.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {}
+        });
+
+        AlertDialog dialog = dialogLocalidade.create();
+        dialog.show();
+    }
+    // Mostra apenas os serviços que forem filtrados por localidade
+    public void recuperarServicosPorLocalidade(){
+        // Dialog de progresso do carregamento. Executa até receber o método dismiss()
+        dialog.show();
+
+        servicosPublicosRef = ConfiguracaoFirebase.getFirebase()
+                .child("servicos_publicos")
+                .child(filtroLocalidade);
+
+        servicosPublicosRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                listaServicos.clear();
+                for (DataSnapshot categorias: dataSnapshot.getChildren()){
+                    for (DataSnapshot servicos: categorias.getChildren()){
+                        // Atribui o serviço recuperado a um objeto Serviço
+                        Servico servico = servicos.getValue(Servico.class);
+                        // Adiciona serviços a uma lista
+                        listaServicos.add(servico);
+                    }
+                }
+
+                Collections.reverse(listaServicos);
+                adapterServicos.notifyDataSetChanged();
+
+                // Interrompe o dialog de progresso
+                dialog.dismiss();
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
     }
 
@@ -108,7 +179,6 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return super.onCreateOptionsMenu(menu);
     }
-
     // Manipula estados dos menus do actionBar
     // (chamado antes do menu ser exibido, toda vez que a activity é carregada)
     @Override
@@ -123,7 +193,6 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onPrepareOptionsMenu(menu);
     }
-
     // Manipula as funções dos menus do actionBar
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -151,5 +220,4 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
 }

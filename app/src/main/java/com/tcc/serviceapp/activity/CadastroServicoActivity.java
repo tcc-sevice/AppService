@@ -147,24 +147,17 @@ public class CadastroServicoActivity extends AppCompatActivity implements View.O
         campoValorServico.setText(null);
     }
 
-    // Preenche os Spinners (combobox) com informações
+    // Preenche os Spinners (combobox) com informações contidas no strings.xml
     private void carregarSpinner(){
-        String[] cidades = new String[]{
-                "Campinas",
-                "Louveira",
-                "Valinhos",
-                "Vinhedo"};
+        // Configuração spinner de locais
+        String[] cidades = getResources().getStringArray(R.array.localidade);
         ArrayAdapter<String> adapterLocalidade = new ArrayAdapter<String>(
                 this, android.R.layout.simple_spinner_item, cidades);
         adapterLocalidade.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         campoLocalidade.setAdapter(adapterLocalidade);
 
-        String[] categorias = new String[]{
-                "Elétrica",
-                "Mecânica",
-                "Residencial",
-                "Construção civil",
-                "Cuidador"};
+        // Configuração spinner de categorias
+        String[] categorias = getResources().getStringArray(R.array.categoria);
         ArrayAdapter<String> adapterCategoria = new ArrayAdapter<String>(
                 this, android.R.layout.simple_spinner_item, categorias);
         adapterCategoria.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

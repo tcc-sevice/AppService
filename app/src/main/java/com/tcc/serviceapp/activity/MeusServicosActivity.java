@@ -32,6 +32,7 @@ import dmax.dialog.SpotsDialog;
 
 public class MeusServicosActivity extends AppCompatActivity {
 
+    // Atributos
     private RecyclerView recyclerViewServicos;
     private List<Servico> servicos = new ArrayList<>();
     private AdapterServicos adapterServicos;
@@ -52,7 +53,6 @@ public class MeusServicosActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         // Método de manipulação do botão de "voltar" no canto da tela
-        // fab == Floating Action Button
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,6 +89,10 @@ public class MeusServicosActivity extends AppCompatActivity {
                                 builder.setTitle("Exclusão de serviço");
                                 builder.setMessage("Tem certeza que deseja excluir o serviço selecionado ?");
                                 builder.setCancelable(true);
+                                builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {}
+                                });
                                 builder.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
@@ -99,7 +103,6 @@ public class MeusServicosActivity extends AppCompatActivity {
                                         adapterServicos.notifyDataSetChanged();
                                     }
                                 });
-
                                 androidx.appcompat.app.AlertDialog dialog = builder.create();
                                 dialog.show();
                             }

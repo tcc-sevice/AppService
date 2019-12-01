@@ -73,11 +73,16 @@ LOGS:
       - Função de exclusão do serviço funcional ! [commit]
 
 30/11/2019
-> Desenvolvendo tela principal {#466}
+> Desenvolvendo visualização na tela principal {#466}
   - Troquei o ConstraintLayout para LinearLayout
     - Adicionei os elementos da interface na activity_main.xml
       - Adicionei métodos de configuração, acesso ao banco e adição de itens na recyclerView da tela na MainActivity.java
         - Visualização dos serviços na tela principal funcional ! [commit]
+> Desenvolvendo filtros na tela principal {#467}
+  - Adicionei método que é chamado quando selecionado o botão de filtro na tela principal, para abrir uma dialog e iterar os dados no banco
+    - Adicionei um novo arquivo de layout xml que é construido dentro de uma dialog para a exibição de um combobox para a seleção das opções
+      - Filtragem por localidade funcional ! [commit]
+      
       
   
   

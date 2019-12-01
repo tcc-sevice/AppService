@@ -1,8 +1,24 @@
 <resources>
     <string name="app_name">Sevice</string>
+
     <!--Textos com sublinhado-->
     <string name="esqueci_senha"><u>Esqueci minha senha !</u></string>
     <string name="esqueci_cep"><u>Esqueci meu CEP !</u></string>
 
     <string name="title_activity_meus_servicos">Meus serviços</string>
+
+    <string-array name="localidade">
+        <item>Campinas</item>
+        <item>Louveira</item>
+        <item>Valinhos</item>
+        <item>Vinhedo</item>
+    </string-array>
+
+    <string-array name="categoria">
+        <item>Elétrica</item>
+        <item>Mecânica</item>
+        <item>Residencial</item>
+        <item>Construção civil</item>
+        <item>Cuidador</item>
+    </string-array>
 </resources>

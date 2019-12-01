@@ -7,14 +7,14 @@
 
     <string name="title_activity_meus_servicos">Meus serviços</string>
 
-    <string-array name="localidade">
+    <string-array name="localidades">
         <item>Campinas</item>
         <item>Louveira</item>
         <item>Valinhos</item>
         <item>Vinhedo</item>
     </string-array>
 
-    <string-array name="categoria">
+    <string-array name="categorias">
         <item>Elétrica</item>
         <item>Mecânica</item>
         <item>Residencial</item>

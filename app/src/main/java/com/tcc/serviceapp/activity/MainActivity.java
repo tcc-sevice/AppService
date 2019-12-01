@@ -38,12 +38,14 @@ public class MainActivity extends AppCompatActivity {
     //Atributos
     private FirebaseAuth autenticacao;
     private RecyclerView recyclerView;
-    private Button button_localidade, button_categoria; //TODO excluir linha?
+//    private Button button_filtroLocalidade, button_filtroCategoria;
     private AdapterServicos adapterServicos;
     private List<Servico> listaServicos = new ArrayList<>();
     private DatabaseReference servicosPublicosRef;
     private AlertDialog dialog;
     private String filtroLocalidade = "";
+    private String filtroCategoria = "";
+    private boolean filtrandoPorLocalidade = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,13 +116,13 @@ public class MainActivity extends AppCompatActivity {
 
         // Configuração spinner de locais
         Spinner spinnerLocalidade = viewSpinner.findViewById(R.id.spinner_filtro);
-        String[] cidades = getResources().getStringArray(R.array.localidade);
+        String[] cidades = getResources().getStringArray(R.array.localidades);
         ArrayAdapter<String> adapterLocalidade = new ArrayAdapter<String>(
                 this, android.R.layout.simple_spinner_item, cidades);
         adapterLocalidade.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerLocalidade.setAdapter(adapterLocalidade);
 
-        dialogLocalidade.setTitle("Selecione a opção desejada:");
+        dialogLocalidade.setTitle("Selecione a localidade desejada:");
         dialogLocalidade.setView(viewSpinner);
         // Ao confirmar a dialog
         dialogLocalidade.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -129,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
                 // Recupera o item do spinner ao clicar em OK
                 filtroLocalidade = spinnerLocalidade.getSelectedItem().toString();
                 recuperarServicosPorLocalidade();
+                filtrandoPorLocalidade = true;
             }
         });
         // Ao cancelar a dialog
@@ -160,6 +163,80 @@ public class MainActivity extends AppCompatActivity {
                         // Adiciona serviços a uma lista
                         listaServicos.add(servico);
                     }
+                }
+
+                Collections.reverse(listaServicos);
+                adapterServicos.notifyDataSetChanged();
+
+                // Interrompe o dialog de progresso
+                dialog.dismiss();
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
+        });
+    }
+
+    // Chamado pelo botão da interface de filtragem por categoria
+    public void filtrarPorCategoria(View view){
+        // Teste para verificar se o filtro de localidade já foi selecionado
+        if (filtrandoPorLocalidade){
+
+            // Configurações do dialog para seleção de local
+            AlertDialog.Builder dialogCategoria = new AlertDialog.Builder(this);
+            View viewSpinner = getLayoutInflater().inflate(R.layout.dialog_spinner, null);
+
+            // Configuração spinner de categorias
+            Spinner spinnerCategoria = viewSpinner.findViewById(R.id.spinner_filtro);
+            String[] cidades = getResources().getStringArray(R.array.categorias);
+            ArrayAdapter<String> adapterCategoria = new ArrayAdapter<String>(
+                    this, android.R.layout.simple_spinner_item, cidades);
+            adapterCategoria.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinnerCategoria.setAdapter(adapterCategoria);
+
+            dialogCategoria.setTitle("Selecione a categoria desejada:");
+            dialogCategoria.setView(viewSpinner);
+            // Ao confirmar a dialog
+            dialogCategoria.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    // Recupera o item do spinner ao clicar em OK
+                    filtroCategoria = spinnerCategoria.getSelectedItem().toString();
+                recuperarServicosPorCategoria();
+                }
+            });
+            // Ao cancelar a dialog
+            dialogCategoria.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {}
+            });
+
+            AlertDialog dialog = dialogCategoria.create();
+            dialog.show();
+        }
+        else {
+            Toast.makeText(this, "Escolha primeiro uma localidade !",
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+    // Mostra apenas os serviços que forem filtrados por categoria
+    public void recuperarServicosPorCategoria(){
+        // Dialog de progresso do carregamento. Executa até receber o método dismiss()
+        dialog.show();
+
+        servicosPublicosRef = ConfiguracaoFirebase.getFirebase()
+                .child("servicos_publicos")
+                .child(filtroLocalidade)
+                .child(filtroCategoria);
+
+        servicosPublicosRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                listaServicos.clear();
+                for (DataSnapshot servicos: dataSnapshot.getChildren()){
+                    // Atribui o serviço recuperado a um objeto Serviço
+                    Servico servico = servicos.getValue(Servico.class);
+                    // Adiciona serviços a uma lista
+                    listaServicos.add(servico);
                 }
 
                 Collections.reverse(listaServicos);

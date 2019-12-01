@@ -39,6 +39,7 @@ import dmax.dialog.SpotsDialog;
 
 public class CadastroServicoActivity extends AppCompatActivity implements View.OnClickListener{
 
+    // Atributos
     private ImageView imagem1, imagem2, imagem3;
     private Spinner campoLocalidade, campoCategoria;
     private EditText campoNomeServico, campoDescricaoServico;
@@ -150,14 +151,14 @@ public class CadastroServicoActivity extends AppCompatActivity implements View.O
     // Preenche os Spinners (combobox) com informações contidas no strings.xml
     private void carregarSpinner(){
         // Configuração spinner de locais
-        String[] cidades = getResources().getStringArray(R.array.localidade);
+        String[] cidades = getResources().getStringArray(R.array.localidades);
         ArrayAdapter<String> adapterLocalidade = new ArrayAdapter<String>(
                 this, android.R.layout.simple_spinner_item, cidades);
         adapterLocalidade.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         campoLocalidade.setAdapter(adapterLocalidade);
 
         // Configuração spinner de categorias
-        String[] categorias = getResources().getStringArray(R.array.categoria);
+        String[] categorias = getResources().getStringArray(R.array.categorias);
         ArrayAdapter<String> adapterCategoria = new ArrayAdapter<String>(
                 this, android.R.layout.simple_spinner_item, categorias);
         adapterCategoria.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

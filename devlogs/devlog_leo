@@ -78,11 +78,15 @@ LOGS:
     - Adicionei os elementos da interface na activity_main.xml
       - Adicionei métodos de configuração, acesso ao banco e adição de itens na recyclerView da tela na MainActivity.java
         - Visualização dos serviços na tela principal funcional ! [commit]
-> Desenvolvendo filtros na tela principal {#467}
+> Desenvolvendo filtro de localidade na tela principal {#467}
   - Adicionei método que é chamado quando selecionado o botão de filtro na tela principal, para abrir uma dialog e iterar os dados no banco
     - Adicionei um novo arquivo de layout xml que é construido dentro de uma dialog para a exibição de um combobox para a seleção das opções
       - Filtragem por localidade funcional ! [commit]
       
+01/12/2019
+> Desenvolvendo filtro de categoria na tela principal {#468}
+  - Reaproveitei os métodos do filtro por localidade para adicionar as mesmas funções para filtragem por categorias
+    - Filtragem por categoria funcional ! [commit]
       
   
   
@@ -97,15 +101,13 @@ TODO:
   - [não iniciado] Sistema de sugestões (???)
   - [não iniciado] Sistema de avaliações (???)
   
-  - Adicionar progress bar nas activities
   - Melhorar mascaras das datas e telefones seguindo o tutorial (https://github.com/rtoshiro/MaskFormatter)
-  - Opçoes de e-mail, telefone e endereço alternativos (???)
   - Correta definição de nomes de métodos, atributos, etc no código
   - Melhorar tratamento de permissões
   - Tratamento de portrait/landscape
   - Tratamento no strings.xml
-  - Tratamento da "imagem principal" no cadastro de serviços
-  -
+  - Adicionar textViews na tela principal para a função de filtragem
+  - 
   
 > Bugs e correções
   - Mover permissão de acesso ao armazenamento interno para a tela de cadastro, deixando apenas uma checagem na tela de novos serviços

@@ -117,18 +117,8 @@ public class MainActivity extends AppCompatActivity {
             linearLayoutFiltros.setVisibility(View.VISIBLE);
         }
         else {
-            // Muda o texto
-            textView_todosServicos.setText(R.string.todos_os_servicos);
-            textView_filtros.setText(R.string.aplicar_filtros);
-            // Esconde os filtros
-            linearLayoutFiltros.setVisibility(View.GONE);
-            // Reseta a lista
-            recuperarServicosPublicos();
-            filtrandoPorLocalidade = false;
-            filtroLocalidade = "";
-            filtroCategoria = "";
-            button_filtroLocalidade.setText("LOCALIDADE: SELECIONE");
-            button_filtroCategoria.setText("CATEGORIA: SELECIONE");
+            // Para limpar os filtros e recarregar a exibição de todos os serviços. Método que encerra a activity e a carrega novamente
+            recreate();
         }
     }
 
@@ -186,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 // Recupera o item do spinner ao clicar em OK
                 filtroLocalidade = spinnerLocalidade.getSelectedItem().toString();
-                button_filtroLocalidade.setText("LOC.: " + filtroLocalidade);
+                button_filtroLocalidade.setText("LOCALIDADE: " + filtroLocalidade);
                 recuperarServicosPorLocalidade();
                 filtrandoPorLocalidade = true;
             }
@@ -258,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(DialogInterface dialog, int which) {
                     // Recupera o item do spinner ao clicar em OK
                     filtroCategoria = spinnerCategoria.getSelectedItem().toString();
-                    button_filtroCategoria.setText("CAT.: " + filtroCategoria);
+                    button_filtroCategoria.setText("CATEGORIA: " + filtroCategoria);
                     recuperarServicosPorCategoria();
                 }
             });

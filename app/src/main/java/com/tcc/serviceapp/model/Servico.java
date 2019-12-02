@@ -28,7 +28,6 @@ public class Servico implements Serializable {
 
     // Salva os dados do serviço no banco de dados do Firebase
     public void salvarServico(){
-        //TODO fazer uma classe separada apenas para dados do usuario ("UsuarioFirebase", por exemplo) caso for necessário usar muitos dados
 
         // Recebe o ID do usuário conectado
         String idUsuario = ConfiguracaoFirebase.getIdUsuario();

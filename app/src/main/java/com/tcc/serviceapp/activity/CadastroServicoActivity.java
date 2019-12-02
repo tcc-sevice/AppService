@@ -233,7 +233,7 @@ public class CadastroServicoActivity extends AppCompatActivity implements View.O
             }
         }
         else{
-            exibirMensagemErro("Selecione ao menos uma foto !");
+            exibirMensagemErro("Adicione ao menos uma foto !");
         }
     }
 

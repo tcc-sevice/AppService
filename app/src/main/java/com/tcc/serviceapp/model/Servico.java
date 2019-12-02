@@ -4,9 +4,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.StorageReference;
 import com.tcc.serviceapp.helper.ConfiguracaoFirebase;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Servico {
+public class Servico implements Serializable {
 
     //Atributos
     private String idServico;

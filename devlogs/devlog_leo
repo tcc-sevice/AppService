@@ -70,39 +70,51 @@ LOGS:
     - Na classe MeusServicosActivity.java defini um método de tratamento de clique
       - Dentro deste método, adicionei um dialog de Confirmação da exclusão
     - Na classe Servico.java defini um método de exclusão das informações de determinado serviço no banco de dados e de exclusão das fotos no Storage
-      - Função de exclusão do serviço funcional !
->
+      - Função de exclusão do serviço funcional ! [commit]
+
+30/11/2019
+> Desenvolvendo visualização na tela principal {#466}
+  - Troquei o ConstraintLayout para LinearLayout
+    - Adicionei os elementos da interface na activity_main.xml
+      - Adicionei métodos de configuração, acesso ao banco e adição de itens na recyclerView da tela na MainActivity.java
+        - Visualização dos serviços na tela principal funcional ! [commit]
+> Desenvolvendo filtro de localidade na tela principal {#467}
+  - Adicionei método que é chamado quando selecionado o botão de filtro na tela principal, para abrir uma dialog e iterar os dados no banco
+    - Adicionei um novo arquivo de layout xml que é construido dentro de uma dialog para a exibição de um combobox para a seleção das opções
+      - Filtragem por localidade funcional ! [commit]
       
-  
+01/12/2019
+> Desenvolvendo filtro de categoria na tela principal {#468}
+  - Reaproveitei os métodos do filtro por localidade para adicionar as mesmas funções para filtragem por categorias
+    - Filtragem por categoria funcional ! [commit]
+> Desenvolvendo tela de detalhes do serviço {#469 e #470}
+  - Adicionei eventos de clique no recyclerView da tela, com o método addOnItemTouchListener()
+    - Criei uma nova activity para a tela de detalhes
+      - Adicionei novo módulo ao projeto, "https://github.com/sayyam/carouselview" para visualização de imagens em sequencia
+        - Construi a inteface de detalhes do serviço e adicionei os métodos necessários para preechimento dos dados na tela
+          - Visualização dos detalhes do serviço funcional ! [commit]
+      
+      
   
 || ================================================================================================================================================ ||
 TODO:
 
 > Dev
   - [completo] Tela de splash
-  - [em andamento] Tela principal com os serviços dos prestadores
+  - [completo] Tela principal com os serviços dos prestadores
+  - [em andamento] Função de abrir discador do celular
   - [não iniciado] Integração com mapas e suas funcionalidades (???)
   - [não iniciado] Tela de perfil (???)
-  - [não iniciado] Sistema de sugestões (???)
-  - [não iniciado] Sistema de avaliações (???)
   
-  - Adicionar progress bar nas activities
   - Melhorar mascaras das datas e telefones seguindo o tutorial (https://github.com/rtoshiro/MaskFormatter)
-  - Opçoes de e-mail, telefone e endereço alternativos (???)
   - Correta definição de nomes de métodos, atributos, etc no código
   - Melhorar tratamento de permissões
-  - Tratamento de portrait/landscape
   - Tratamento no strings.xml
-  - Tratamento da "imagem principal" no cadastro de serviços
-  -
+  - Adicionar textViews na tela principal para a função de filtragem
+  - 
   
 > Bugs e correções
   - Mover permissão de acesso ao armazenamento interno para a tela de cadastro, deixando apenas uma checagem na tela de novos serviços
-  - Upload de imagens no cadastro deve ser feito após o login do usuário, por causa do token de permição do Storage do Firebase
-  - Mudar tela de cadastro de endereços para dentro da tela de perfil OU retrabalhar a sequencia na hora de cadastrar o usuário
-  - Campo de valor no cadastro de serviços sem limite de numeros e causando overflow
-  - Visualização da data de nascimento salva no banco de dados está estranha
-  - Classe ValidaDados e validação do CPF no cadastro (???)
   -
 
 
@@ -112,4 +124,5 @@ MISC:
 
 > Usar Linear Layouts se for necessário retrabalhar design de alguma tela
 > Explicação da extrutura de salvamento das imagens do serviço no Firebase em {#460}, de 00:00 à 05:00
+> Finalização do app com a função de abrir o discador do telefone {#470 min ~13:00}
 >

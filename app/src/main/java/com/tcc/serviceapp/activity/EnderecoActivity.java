@@ -177,7 +177,6 @@ public class EnderecoActivity extends AppCompatActivity {
 
                         if( task.isSuccessful() ){
                             try {
-                                //String idUsuario =  task.getResult().getUser().getUid();
                                 usuario.setId(RemoveCaracteresEspeciais(usuario.getCpf()));
                                 usuario.Salvar(usuario);
                             }catch (Exception e){

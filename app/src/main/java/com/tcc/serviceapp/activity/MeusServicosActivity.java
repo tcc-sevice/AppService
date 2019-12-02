@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -38,6 +39,7 @@ public class MeusServicosActivity extends AppCompatActivity {
     private AdapterServicos adapterServicos;
     private DatabaseReference servicoUsuarioRef;
     private AlertDialog dialog;
+    private TextView textView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,10 +47,10 @@ public class MeusServicosActivity extends AppCompatActivity {
         setContentView(R.layout.activity_meus_servicos);
 
         // Configurações iniciais
+        textView = findViewById(R.id.textView_dicaNenhumServico);
         servicoUsuarioRef = ConfiguracaoFirebase.getFirebase()
                 .child("servicos_cadastrados")
                 .child(ConfiguracaoFirebase.getIdUsuario());
-        recyclerViewServicos = findViewById(R.id.recyclerViewServicos);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -67,6 +69,7 @@ public class MeusServicosActivity extends AppCompatActivity {
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp);
 
         // Configurações do RecyclerView
+        recyclerViewServicos = findViewById(R.id.recyclerViewServicos);
         recyclerViewServicos.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewServicos.setHasFixedSize(true);
         adapterServicos = new AdapterServicos(servicos, this);
@@ -139,6 +142,14 @@ public class MeusServicosActivity extends AppCompatActivity {
 
                 Collections.reverse(servicos);
                 adapterServicos.notifyDataSetChanged();
+
+                // Mostra/esconde um texto dica da tela
+                if (servicos.isEmpty()){
+                    textView.setVisibility(View.VISIBLE);
+                }
+                else {
+                    textView.setVisibility(View.GONE);
+                }
 
                 // Interrompe o dialog de progresso
                 dialog.dismiss();

@@ -101,7 +101,8 @@ TODO:
 
 > Dev
   - [completo] Tela de splash
-  - [em andamento] Tela principal com os serviços dos prestadores
+  - [completo] Tela principal com os serviços dos prestadores
+  - [em andamento] Função de abrir discador do celular
   - [não iniciado] Integração com mapas e suas funcionalidades (???)
   - [não iniciado] Tela de perfil (???)
   
@@ -114,7 +115,6 @@ TODO:
   
 > Bugs e correções
   - Mover permissão de acesso ao armazenamento interno para a tela de cadastro, deixando apenas uma checagem na tela de novos serviços
-  - Campo de valor no cadastro de serviços sem limite de numeros e causando overflow
   -
 
 

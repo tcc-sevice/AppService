@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private LinearLayout linearLayoutFiltros;
     private TextView textView_filtros, textView_todosServicos;
+    private Button button_filtroLocalidade, button_filtroCategoria;
     private AdapterServicos adapterServicos;
     private List<Servico> listaServicos = new ArrayList<>();
     private DatabaseReference servicosPublicosRef;
@@ -58,9 +60,6 @@ public class MainActivity extends AppCompatActivity {
 
         //
         inicializarComponentes();
-
-        // teste
-        getSupportActionBar().setTitle("Olá, " + ConfiguracaoFirebase.getIdUsuario());
 
         // Configurações dialog de progresso
         dialog = new SpotsDialog.Builder()
@@ -108,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
-    // Chamado ao clicar em "Aplicar filtros" na tela
+    // Chamado ao clicar em "Aplicar filtros" na tela, mostra/esconde os filtros
     public void mostrarFiltros(View view){
         if (textView_filtros.getText().toString().equals("Aplicar filtros")){
             // Muda o texto
@@ -121,10 +120,15 @@ public class MainActivity extends AppCompatActivity {
             // Muda o texto
             textView_todosServicos.setText(R.string.todos_os_servicos);
             textView_filtros.setText(R.string.aplicar_filtros);
-            // Mostra os filtros
+            // Esconde os filtros
             linearLayoutFiltros.setVisibility(View.GONE);
             // Reseta a lista
             recuperarServicosPublicos();
+            filtrandoPorLocalidade = false;
+            filtroLocalidade = "";
+            filtroCategoria = "";
+            button_filtroLocalidade.setText("LOCALIDADE: SELECIONE");
+            button_filtroCategoria.setText("CATEGORIA: SELECIONE");
         }
     }
 
@@ -145,7 +149,6 @@ public class MainActivity extends AppCompatActivity {
                             Servico servico = servicos.getValue(Servico.class);
                             // Adiciona serviços a uma lista
                             listaServicos.add(servico);
-
                         }
                     }
                 }
@@ -183,6 +186,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 // Recupera o item do spinner ao clicar em OK
                 filtroLocalidade = spinnerLocalidade.getSelectedItem().toString();
+                button_filtroLocalidade.setText("LOC.: " + filtroLocalidade);
                 recuperarServicosPorLocalidade();
                 filtrandoPorLocalidade = true;
             }
@@ -254,7 +258,8 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(DialogInterface dialog, int which) {
                     // Recupera o item do spinner ao clicar em OK
                     filtroCategoria = spinnerCategoria.getSelectedItem().toString();
-                recuperarServicosPorCategoria();
+                    button_filtroCategoria.setText("CAT.: " + filtroCategoria);
+                    recuperarServicosPorCategoria();
                 }
             });
             // Ao cancelar a dialog
@@ -313,12 +318,14 @@ public class MainActivity extends AppCompatActivity {
     // (chamado antes do menu ser exibido, toda vez que a activity é carregada)
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        // Verifica se o usuário está logado e a partir disso, mostra o menu correspondente
+        // Verifica se o usuário está logado e a partir disso, mostra o menu correspondente e tambem muda o texto da action bar
         if (autenticacao.getCurrentUser() == null){
             menu.setGroupVisible(R.id.group_deslogado, true);
+            getSupportActionBar().setTitle("Sevice");
         }
         else {
             menu.setGroupVisible(R.id.group_logado, true);
+            getSupportActionBar().setTitle("Olá, Fulano");
         }
 
         return super.onPrepareOptionsMenu(menu);
@@ -357,5 +364,7 @@ public class MainActivity extends AppCompatActivity {
         textView_todosServicos = findViewById(R.id.textView_todosServicos);
         textView_filtros = findViewById(R.id.textView_aplicarFiltros);
         linearLayoutFiltros = findViewById(R.id.linearLayout_filtros);
+        button_filtroLocalidade = findViewById(R.id.button_filtroLocalidade);
+        button_filtroCategoria = findViewById(R.id.button_filtroCategoria);
     }
 }

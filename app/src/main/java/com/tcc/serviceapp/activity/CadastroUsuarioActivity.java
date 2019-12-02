@@ -249,9 +249,6 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
-                        Toast.makeText(CadastroUsuarioActivity.this,
-                                "Cpf já Cadastrado !",
-                                Toast.LENGTH_LONG).show();
                         cpf.setError("Digite um novo Cpf");
                     } else {
                         startActivity(intent);

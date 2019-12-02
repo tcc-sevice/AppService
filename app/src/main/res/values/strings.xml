@@ -4,6 +4,11 @@
     <!--Textos com sublinhado-->
     <string name="esqueci_senha"><u>Esqueci minha senha !</u></string>
     <string name="esqueci_cep"><u>Esqueci meu CEP !</u></string>
+    <string name="aplicar_filtros"><u>Aplicar filtros</u></string>
+    <string name="limpar_filtros"><u>Limpar filtros</u></string>
+
+    <string name="todos_os_servicos">Todos os serviços :</string>
+    <string name="filtrando_por">Filtrando por :</string>
 
     <string name="title_activity_meus_servicos">Meus serviços</string>
 

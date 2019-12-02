@@ -9,8 +9,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -40,7 +41,8 @@ public class MainActivity extends AppCompatActivity {
     //Atributos
     private FirebaseAuth autenticacao;
     private RecyclerView recyclerView;
-//    private Button button_filtroLocalidade, button_filtroCategoria;
+    private LinearLayout linearLayoutFiltros;
+    private TextView textView_filtros, textView_todosServicos;
     private AdapterServicos adapterServicos;
     private List<Servico> listaServicos = new ArrayList<>();
     private DatabaseReference servicosPublicosRef;
@@ -53,6 +55,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //
+        inicializarComponentes();
+
+        // teste
+        getSupportActionBar().setTitle("Olá, " + ConfiguracaoFirebase.getIdUsuario());
 
         // Configurações dialog de progresso
         dialog = new SpotsDialog.Builder()
@@ -67,7 +75,6 @@ public class MainActivity extends AppCompatActivity {
                 .child("servicos_publicos");
 
         // Configurações do RecyclerView
-        recyclerView = findViewById(R.id.recyclerView_servicosPublicos);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
         adapterServicos = new AdapterServicos(listaServicos, this);
@@ -99,6 +106,26 @@ public class MainActivity extends AppCompatActivity {
                         }
                 )
         );
+    }
+
+    // Chamado ao clicar em "Aplicar filtros" na tela
+    public void mostrarFiltros(View view){
+        if (textView_filtros.getText().toString().equals("Aplicar filtros")){
+            // Muda o texto
+            textView_todosServicos.setText(R.string.filtrando_por);
+            textView_filtros.setText(R.string.limpar_filtros);
+            // Mostra os filtros
+            linearLayoutFiltros.setVisibility(View.VISIBLE);
+        }
+        else {
+            // Muda o texto
+            textView_todosServicos.setText(R.string.todos_os_servicos);
+            textView_filtros.setText(R.string.aplicar_filtros);
+            // Mostra os filtros
+            linearLayoutFiltros.setVisibility(View.GONE);
+            // Reseta a lista
+            recuperarServicosPublicos();
+        }
     }
 
     // Recupera os dados do nó "servicos_publicos" no banco de dados
@@ -322,5 +349,13 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    //
+    private void inicializarComponentes(){
+        recyclerView = findViewById(R.id.recyclerView_servicosPublicos);
+        textView_todosServicos = findViewById(R.id.textView_todosServicos);
+        textView_filtros = findViewById(R.id.textView_aplicarFiltros);
+        linearLayoutFiltros = findViewById(R.id.linearLayout_filtros);
     }
 }

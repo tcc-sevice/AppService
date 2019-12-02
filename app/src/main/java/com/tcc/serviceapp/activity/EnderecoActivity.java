@@ -1,12 +1,14 @@
 package com.tcc.serviceapp.activity;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -24,6 +26,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.tcc.serviceapp.R;
@@ -33,6 +40,7 @@ import com.tcc.serviceapp.model.Usuario;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Date;
+import java.util.Objects;
 import java.util.UUID;
 
 public class EnderecoActivity extends AppCompatActivity {
@@ -104,33 +112,32 @@ public class EnderecoActivity extends AppCompatActivity {
         String campoCep = cep.getText().toString();
         String campoComplemento = complemento.getText().toString();
 
-        validaCampos(campoCidade, campoBairro, campoRua, campoNumero, campoCep, campoComplemento);
+        if (validaCampos(campoCidade, campoBairro, campoRua, campoNumero, campoCep)== "N") {
 
-        Endereco enderecoPersisty = new Endereco();
-        enderecoPersisty = preenchaEndereco(campoCidade, campoBairro, campoRua, campoNumero, campoCep, campoComplemento);
+            Endereco enderecoPersisty = preenchaEndereco(campoCidade, campoBairro, campoRua, campoNumero, campoCep, campoComplemento);
 
-        try {
-            String idEndereco = preencheUser(usuario);
-            enderecoPersisty.setId(idEndereco);
-            enderecoPersisty.Salvar(enderecoPersisty);
+            try {
+                preencheUser(usuario);
+                enderecoPersisty.setId(RemoveCaracteresEspeciais(usuario.getCpf()));
+                enderecoPersisty.Salvar(enderecoPersisty);
 
-            Toast.makeText(this,
-                    "Cadastro realizado com sucesso !",
-                    Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,
+                        "Cadastro realizado com sucesso !",
+                        Toast.LENGTH_SHORT).show();
+                if (uri != null)
+                    carregaFoto(uri);
 
-            carregaFoto(uri);
+                Intent login = new Intent(EnderecoActivity.this, LoginActiviy.class);
+                startActivity(login);
 
-            Intent login = new Intent(EnderecoActivity.this, LoginActiviy.class);
-            startActivity(login);
+            } catch (Exception e) {
 
-        } catch (Exception e) {
-
-            Toast.makeText(this,
-                    "Erro ao cadastrar endereço !",
-                    Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
+                Toast.makeText(this,
+                        "Erro ao cadastrar endereço !",
+                        Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
+            }
         }
-
     }
 
     private void carregaFoto(Uri uri) {
@@ -156,9 +163,10 @@ public class EnderecoActivity extends AppCompatActivity {
         });
     }
 
-    private String preencheUser(Usuario usuario){
+    private void preencheUser(Usuario usuario){
 
         //FirebaseApp.initializeApp(this);
+        usuario.setId(idFoto);
         autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
         autenticacao.createUserWithEmailAndPassword(
                 usuario.getEmail(),
@@ -169,8 +177,8 @@ public class EnderecoActivity extends AppCompatActivity {
 
                         if( task.isSuccessful() ){
                             try {
-                                String idUsuario =  task.getResult().getUser().getUid();
-                                usuario.setId(idUsuario);
+                                //String idUsuario =  task.getResult().getUser().getUid();
+                                usuario.setId(RemoveCaracteresEspeciais(usuario.getCpf()));
                                 usuario.Salvar(usuario);
                             }catch (Exception e){
                                 e.printStackTrace();
@@ -199,8 +207,11 @@ public class EnderecoActivity extends AppCompatActivity {
                     }
                 }
         );
+    }
 
-        return usuario.getId();
+    public String RemoveCaracteresEspeciais (String rmcaracter){
+        rmcaracter = rmcaracter.replaceAll("[^a-zZ-Z0-9 ]", "");
+        return rmcaracter;
     }
 
     private Endereco preenchaEndereco(String campoCidade, String campoBairro, String campoRua, String campoNumero,
@@ -215,23 +226,15 @@ public class EnderecoActivity extends AppCompatActivity {
         return endereco;
     }
 
-    private void validaCampos(String campoCidade, String campoBairro, String campoRua, String campoNumero,
-                              String campoCep, String campoComplemento) {
-
+    private String validaCampos(String campoCidade, String campoBairro, String campoRua, String campoNumero,
+                              String campoCep) {
+        String retornoErro = "S";
         if (!campoCidade.isEmpty()) {
             if (!campoBairro.isEmpty()) {
                 if (!campoRua.isEmpty()) {
                     if (!campoNumero.isEmpty()) {
-                        if (!campoCep.isEmpty()) {
-                            if (!campoComplemento.isEmpty()) {
-                                Intent intent = new Intent(EnderecoActivity.this,
-                                        LoginActiviy.class);
-                                startActivity(intent);
-                            } else {
-                                Toast.makeText(EnderecoActivity.this,
-                                        "Preencha o Complemento !",
-                                        Toast.LENGTH_SHORT).show();
-                            }
+                        if ( campoCep.length()== 9) {
+                                 retornoErro = "N";
                         } else {
                             Toast.makeText(EnderecoActivity.this,
                                     "Preencha o Cep !",
@@ -257,5 +260,6 @@ public class EnderecoActivity extends AppCompatActivity {
                     "Preencha a cidade !",
                     Toast.LENGTH_SHORT).show();
         }
+      return retornoErro;
     }
 }

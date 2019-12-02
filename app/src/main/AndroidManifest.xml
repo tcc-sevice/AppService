@@ -1,23 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.tcc.serviceapp">
-
-    <!--Permissões-->
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <!-- Permissões -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
+        android:screenOrientation="portrait"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:screenOrientation="portrait">
-
-        <activity android:name=".activity.CadastroServicoActivity"></activity>
-
+        android:theme="@style/AppTheme">
+        <activity android:name=".activity.ResetSenhaActivity"></activity>
+        <activity android:name=".activity.CadastroServicoActivity" />
         <activity
             android:name=".activity.MeusServicosActivity"
             android:label="@string/title_activity_meus_servicos"
@@ -27,21 +25,18 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.tcc.serviceapp.activity.MainActivity" />
         </activity>
-
         <activity android:name=".activity.SplashActivity">
             <intent-filter>
+
                 <!-- Parâmetros que definem a activity padrão -->
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity android:name=".activity.MainActivity" />
-
         <activity android:name=".activity.LoginActiviy" />
-
         <activity android:name=".activity.CadastroUsuarioActivity" />
-
         <activity android:name=".activity.EnderecoActivity" />
     </application>
 

@@ -22,7 +22,6 @@ public class Usuario implements Serializable {
     private String senha;
     private String confirmaSenha;
     private String idFoto;
-    private transient Uri caminhoFotoPerfil = null;
 
     public Usuario() {
     }
@@ -112,10 +111,4 @@ public class Usuario implements Serializable {
         this.idFoto = idFoto;
     }
 
-    public Uri getCaminhoFotoPerfil() {
-        return caminhoFotoPerfil;
-    }
-    public void setCaminhoFotoPerfil(Uri caminhoFotoPerfil) {
-        this.caminhoFotoPerfil = caminhoFotoPerfil;
-    }
 }

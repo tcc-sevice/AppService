@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.rtoshiro.util.format.SimpleMaskFormatter;
@@ -29,8 +31,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.tcc.serviceapp.R;
 import com.tcc.serviceapp.helper.ConfiguracaoFirebase;
 import com.tcc.serviceapp.helper.ValidaDados;
@@ -42,6 +48,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -55,7 +62,9 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
     private FirebaseAuth autenticacao;
     private Calendar calendar;
     private Usuario usuario;
-    private Uri url; // Para acessar fotos do storage?
+    private Uri url;
+    private DatabaseReference firebaseRef;
+    private DatabaseReference usuariosRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +79,9 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
 
         // Método que faz máscaras (formatação padão) para os campos de CPF, data de nascimento e telefone
         formatMascara();
-
+        //
+        firebaseRef = ConfiguracaoFirebase.getFirebase();
+        usuariosRef = firebaseRef.child("usuarios");
         //
         fotoPerfil.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,7 +92,6 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
                 }
             }
         });
-
         //
         final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
             @Override
@@ -110,7 +120,6 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 
     // Inicializa componentes necessários da interface ao criar nova instância de cadastro
@@ -214,7 +223,7 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
             Date dataNascimento = formatDate(campoDataNascimento);
 
             Drawable drawable = fotoPerfil.getDrawable();
-            Bitmap bitmap = ((BitmapDrawable)drawable).getBitmap();
+            Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
             byte[] imageInByte = stream.toByteArray();
@@ -234,11 +243,29 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
             intent.putExtra("BitmapImage", imageInByte);
             intent.putExtra("usuario", usuario);
             intent.putExtra("url", url);
+            Query clienteCnpj = usuariosRef.orderByChild("cpf").equalTo(campoCpf);
 
-            startActivity(intent);
+            clienteCnpj.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        Toast.makeText(CadastroUsuarioActivity.this,
+                                "Cpf já Cadastrado !",
+                                Toast.LENGTH_LONG).show();
+                        cpf.setError("Digite um novo Cpf");
+                    } else {
+                        startActivity(intent);
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
         }
     }
-
     private String validaSexo(){
 
         String sexo = "outro";

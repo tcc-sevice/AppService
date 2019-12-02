@@ -84,7 +84,14 @@ public class MeusServicosActivity extends AppCompatActivity {
                         this, recyclerViewServicos,
                         new RecyclerItemClickListener.OnItemClickListener() {
                             @Override
-                            public void onItemClick(View view, int position) {}
+                            public void onItemClick(View view, int position) {
+                                // Atribui o serviço selecionado a um objeto serviço
+                                Servico servicoSelecionado = servicos.get(position);
+                                // Direciona para a tela de detalhes, enviando o serviço selecionado
+                                Intent intent = new Intent(MeusServicosActivity.this, DetalhesProdutoActivity.class);
+                                intent.putExtra("servicoSelecionado", servicoSelecionado);
+                                startActivity(intent);
+                            }
 
                             // Chamado caso o usuario mantenha o item pressionado
                             @Override

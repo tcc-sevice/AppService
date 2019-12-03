@@ -315,7 +315,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else {
             menu.setGroupVisible(R.id.group_logado, true);
-            getSupportActionBar().setTitle("Olá, Fulano");
+            getSupportActionBar().setTitle("Olá, ");
         }
 
         return super.onPrepareOptionsMenu(menu);

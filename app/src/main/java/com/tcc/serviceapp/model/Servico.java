@@ -42,20 +42,6 @@ public class Servico implements Serializable {
         // Recebe o ID do usuário conectado
         String idUsuario = ConfiguracaoFirebase.getIdUsuario();
 
-        // Retorna o CPF do usuário conectado, para referencia no banco
-        DatabaseReference userRef = ConfiguracaoFirebase.getFirebase()
-                .child("usuarios");
-        userRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.i("FIREBASE", dataSnapshot.getValue().toString());
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {}
-        });
-
-
         // Referencia do banco de dados
         DatabaseReference servicoRef = ConfiguracaoFirebase.getFirebase()
                 .child("servicos_cadastrados");

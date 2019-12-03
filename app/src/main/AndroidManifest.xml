@@ -24,7 +24,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.MainActivity" />
-        <activity android:name=".activity.DetalhesProdutoActivity" />
+        <activity android:name=".activity.DetalhesServicoActivity" />
         <activity android:name=".activity.LoginActiviy" />
         <activity android:name=".activity.CadastroUsuarioActivity" />
         <activity android:name=".activity.EnderecoActivity" />

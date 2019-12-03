@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -44,6 +45,7 @@ public class CadastroServicoActivity extends AppCompatActivity implements View.O
     private Spinner campoLocalidade, campoCategoria;
     private EditText campoNomeServico, campoDescricaoServico;
     private CurrencyEditText campoValorServico;
+    private CheckBox checkBox_valorCombinar;
 
     private String[] permissoes = new String[]{
             Manifest.permission.READ_EXTERNAL_STORAGE
@@ -143,6 +145,7 @@ public class CadastroServicoActivity extends AppCompatActivity implements View.O
         campoNomeServico = findViewById(R.id.editText_nomeServico);
         campoDescricaoServico = findViewById(R.id.editText_descricaoServico);
         campoValorServico = findViewById(R.id.editText_valorServico);
+        checkBox_valorCombinar = findViewById(R.id.checkBox_valorCombinar);
         // Configura localidade do campo de valor para pt-br, para que a moeda seja o Real
         campoValorServico.setLocale(new Locale("pt", "BR"));
         campoValorServico.setText(null);
@@ -312,6 +315,12 @@ public class CadastroServicoActivity extends AppCompatActivity implements View.O
                 }
             }
         });
+    }
+
+    public void definirValorCombinar(View view){
+        if (checkBox_valorCombinar.isChecked()){
+            campoValorServico.setVisibility(View.GONE);
+        }
     }
 
 }

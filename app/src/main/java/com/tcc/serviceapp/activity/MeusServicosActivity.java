@@ -88,7 +88,7 @@ public class MeusServicosActivity extends AppCompatActivity {
                                 // Atribui o serviço selecionado a um objeto serviço
                                 Servico servicoSelecionado = servicos.get(position);
                                 // Direciona para a tela de detalhes, enviando o serviço selecionado
-                                Intent intent = new Intent(MeusServicosActivity.this, DetalhesProdutoActivity.class);
+                                Intent intent = new Intent(MeusServicosActivity.this, DetalhesServicoActivity.class);
                                 intent.putExtra("servicoSelecionado", servicoSelecionado);
                                 startActivity(intent);
                             }

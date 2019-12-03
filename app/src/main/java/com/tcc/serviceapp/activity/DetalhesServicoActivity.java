@@ -2,8 +2,6 @@ package com.tcc.serviceapp.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -15,7 +13,7 @@ import com.synnapps.carouselview.ImageListener;
 import com.tcc.serviceapp.R;
 import com.tcc.serviceapp.model.Servico;
 
-public class DetalhesProdutoActivity extends AppCompatActivity {
+public class DetalhesServicoActivity extends AppCompatActivity {
 
     // Atributos
     private CarouselView carouselView;
@@ -28,11 +26,9 @@ public class DetalhesProdutoActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detalhes_produto);
+        setContentView(R.layout.activity_detalhes_servico);
 
-        // Configuração da action bar TODO excluir linhas abaixo caso não funcione na tela para a tela de meus serviços
-//        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp);
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        // Configuração da action bar
         getSupportActionBar().setTitle("Detalhes do serviço");
 
         // Inicializa os atributos com os componentes da interface necessários

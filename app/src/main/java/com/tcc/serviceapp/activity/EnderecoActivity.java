@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -51,6 +52,7 @@ public class EnderecoActivity extends AppCompatActivity {
     private String idFoto;
     private FirebaseAuth autenticacao;
     private StorageReference storageReference;
+    private Button cadastrar;
     private Usuario usuario;
     private Uri uri;
 
@@ -80,6 +82,54 @@ public class EnderecoActivity extends AppCompatActivity {
         }
         uri = (Uri) intent.getParcelableExtra("url");
         usuario = (Usuario) intent.getSerializableExtra("usuario");
+
+        cadastrar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //FirebaseApp.initializeApp(this);
+                usuario.setId(idFoto);
+                autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
+                autenticacao.createUserWithEmailAndPassword(
+                        usuario.getEmail(),
+                        usuario.getSenha()).addOnCompleteListener(
+                        new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+
+                                if (task.isSuccessful()) {
+                                    try {
+                                        usuario.setId(RemoveCaracteresEspeciais(usuario.getCpf()));
+                                        usuario.Salvar(usuario);
+                                        cadastrarEndereco();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                } else {
+
+                                    String erroExcecao = "";
+                                    try {
+                                        throw task.getException();
+                                    } catch (FirebaseAuthWeakPasswordException e) {
+                                        erroExcecao = "Digite uma senha mais forte, use combinações de letras e números !";
+                                    } catch (FirebaseAuthInvalidCredentialsException e) {
+                                        erroExcecao = "Por favor, digite um e-mail válido !";
+                                    } catch (FirebaseAuthUserCollisionException e) {
+                                        erroExcecao = "Este e-mail já está cadastrado !";
+                                    } catch (Exception e) {
+                                        erroExcecao = "ao cadastrar usuário: " + e.getMessage();
+                                        e.printStackTrace();
+                                    }
+
+                                    Toast.makeText(EnderecoActivity.this,
+                                            "Erro: " + erroExcecao,
+                                            Toast.LENGTH_SHORT).show();
+
+                                }
+                            }
+                        }
+                );
+            }
+        });
     }
 
     public void inicializaComponente() {
@@ -93,6 +143,7 @@ public class EnderecoActivity extends AppCompatActivity {
         fotoPerfil = findViewById(R.id.fotoPerfil);
         idFoto = UUID.randomUUID().toString();
         storageReference = ConfiguracaoFirebase.getFirebaseStorage();
+        cadastrar = findViewById(R.id.cadastrar);
 
     }
 
@@ -103,7 +154,7 @@ public class EnderecoActivity extends AppCompatActivity {
         cep.addTextChangedListener(formatCep);
     }
 
-    public void cadastrarEndereco(View view) {
+    public void cadastrarEndereco() {
 
         String campoCidade = cidade.getText().toString();
         String campoBairro = bairro.getText().toString();
@@ -117,7 +168,6 @@ public class EnderecoActivity extends AppCompatActivity {
             Endereco enderecoPersisty = preenchaEndereco(campoCidade, campoBairro, campoRua, campoNumero, campoCep, campoComplemento);
 
             try {
-                preencheUser(usuario);
                 enderecoPersisty.setId(RemoveCaracteresEspeciais(usuario.getCpf()));
                 enderecoPersisty.Salvar(enderecoPersisty);
 
@@ -127,8 +177,9 @@ public class EnderecoActivity extends AppCompatActivity {
                 if (uri != null)
                     carregaFoto(uri);
 
-                Intent login = new Intent(EnderecoActivity.this, LoginActiviy.class);
+                Intent login = new Intent(EnderecoActivity.this, MainActivity.class);
                 startActivity(login);
+                finishAffinity();
 
             } catch (Exception e) {
 
@@ -161,51 +212,6 @@ public class EnderecoActivity extends AppCompatActivity {
                         Toast.LENGTH_SHORT).show();*/
             }
         });
-    }
-
-    private void preencheUser(Usuario usuario){
-
-        //FirebaseApp.initializeApp(this);
-        usuario.setId(idFoto);
-        autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
-        autenticacao.createUserWithEmailAndPassword(
-                usuario.getEmail(),
-                usuario.getSenha()).addOnCompleteListener(
-                new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-
-                        if( task.isSuccessful() ){
-                            try {
-                                usuario.setId(RemoveCaracteresEspeciais(usuario.getCpf()));
-                                usuario.Salvar(usuario);
-                            }catch (Exception e){
-                                e.printStackTrace();
-                            }
-                        }else {
-
-                            String erroExcecao = "";
-                            try{
-                                throw task.getException();
-                            }catch (FirebaseAuthWeakPasswordException e){
-                                erroExcecao = "Digite uma senha mais forte, use combinações de letras e números !";
-                            }catch (FirebaseAuthInvalidCredentialsException e){
-                                erroExcecao = "Por favor, digite um e-mail válido !";
-                            }catch (FirebaseAuthUserCollisionException e){
-                                erroExcecao = "Este e-mail já está cadastrado !";
-                            } catch (Exception e) {
-                                erroExcecao = "ao cadastrar usuário: "  + e.getMessage();
-                                e.printStackTrace();
-                            }
-
-                            Toast.makeText(EnderecoActivity.this,
-                                    "Erro: " + erroExcecao ,
-                                    Toast.LENGTH_SHORT).show();
-
-                        }
-                    }
-                }
-        );
     }
 
     public String RemoveCaracteresEspeciais (String rmcaracter){

@@ -94,7 +94,7 @@
         android:layout_marginEnd="24dp"
         android:layout_marginRight="24dp"
         android:background="@drawable/background_botao"
-        android:onClick="visualizarTelefone"
+        android:onClick="abreTelefone"
         android:text="Entrar em contato" />
 
 </LinearLayout>

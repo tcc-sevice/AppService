@@ -105,7 +105,7 @@ public class EnderecoActivity extends AppCompatActivity {
 
                                 if (task.isSuccessful()) {
                                     try {
-                                        usuario.setId(RemoveCaracteresEspeciais(usuario.getCpf()));
+                                        usuario.setId(removeCaracteresEspeciais(usuario.getCpf()));
                                         usuario.Salvar(usuario);
                                         cadastrarEndereco();
                                     } catch (Exception e) {
@@ -176,7 +176,7 @@ public class EnderecoActivity extends AppCompatActivity {
             Endereco enderecoPersisty = preenchaEndereco(campoCidade, campoBairro, campoRua, campoNumero, campoCep, campoComplemento);
 
             try {
-                enderecoPersisty.setId(RemoveCaracteresEspeciais(usuario.getCpf()));
+                enderecoPersisty.setId(removeCaracteresEspeciais(usuario.getCpf()));
                 enderecoPersisty.Salvar(enderecoPersisty);
 
                 Toast.makeText(this,
@@ -222,7 +222,7 @@ public class EnderecoActivity extends AppCompatActivity {
         });
     }
 
-    public String RemoveCaracteresEspeciais (String rmcaracter){
+    public String removeCaracteresEspeciais (String rmcaracter){
         rmcaracter = rmcaracter.replaceAll("[^a-zZ-Z0-9 ]", "");
         return rmcaracter;
     }

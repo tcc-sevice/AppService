@@ -25,6 +25,14 @@ import com.blackcat.currencyedittext.CurrencyEditText;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.tcc.serviceapp.R;
@@ -59,6 +67,9 @@ public class CadastroServicoActivity extends AppCompatActivity implements View.O
     private StorageReference storage;
 
     private android.app.AlertDialog dialog;
+    private DatabaseReference firebaseRef;
+    private DatabaseReference usuariosRef;
+    private Usuario usuario;
 
 
     @Override
@@ -74,8 +85,10 @@ public class CadastroServicoActivity extends AppCompatActivity implements View.O
 
         // Inicialização de componentes necessários da interface
         inicializarComponentes();
+        firebaseRef = ConfiguracaoFirebase.getFirebase();
+        usuariosRef = firebaseRef.child("usuarios");
         storage = ConfiguracaoFirebase.getFirebaseStorage();
-
+        devolveUsuarioLogado();
         // Carrega itens nos spinners
         carregarSpinner();
     }
@@ -254,6 +267,8 @@ public class CadastroServicoActivity extends AppCompatActivity implements View.O
         servico.setLocalidade(campoLocalidade.getSelectedItem().toString());
         servico.setCategoria(campoCategoria.getSelectedItem().toString());
         servico.setNomeServico(campoNomeServico.getText().toString());
+        servico.setNomeUsuario(usuario.getNome());
+        servico.setTelUsuario(removeCaracteresEspeciais(usuario.getTelefone()));
         if (checkBox_valorCombinar.isChecked()){
             String valoraCombinar = "Valor a combinar";
             servico.setValor(valoraCombinar);
@@ -264,6 +279,32 @@ public class CadastroServicoActivity extends AppCompatActivity implements View.O
         servico.setDescricao(campoDescricaoServico.getText().toString());
 
         return servico;
+    }
+
+    public String removeCaracteresEspeciais (String rmcaracter){
+        rmcaracter = rmcaracter.replaceAll("[^a-zZ-Z0-9 ]", "");
+        return rmcaracter;
+    }
+
+    private void devolveUsuarioLogado(){
+        DatabaseReference usuarios = FirebaseDatabase.getInstance().getReference();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String email = user.getEmail();
+        usuarios.child("usuarios").addListenerForSingleValueEvent(new ValueEventListener() {
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot snap : dataSnapshot.getChildren()) {
+                    if (email.equals(snap.child("email").getValue())) {
+
+                       usuario = snap.getValue(Usuario.class);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
     }
 
     // Após o devido tratamento, salva os dados do serviço a ser cadastrado

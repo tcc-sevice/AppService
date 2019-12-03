@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.rtoshiro.util.format.SimpleMaskFormatter;
@@ -47,6 +48,7 @@ import java.util.UUID;
 public class EnderecoActivity extends AppCompatActivity {
 
     private EditText cidade, rua, bairro, numero, complemento, cep;
+    private TextView esqueciCep;
     private ImageView fotoPerfil;
     private Endereco endereco;
     private String idFoto;
@@ -82,7 +84,12 @@ public class EnderecoActivity extends AppCompatActivity {
         }
         uri = (Uri) intent.getParcelableExtra("url");
         usuario = (Usuario) intent.getSerializableExtra("usuario");
-
+        esqueciCep.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.buscacep.correios.com.br/sistemas/buscacep")));
+            }
+        });
         cadastrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -144,6 +151,7 @@ public class EnderecoActivity extends AppCompatActivity {
         idFoto = UUID.randomUUID().toString();
         storageReference = ConfiguracaoFirebase.getFirebaseStorage();
         cadastrar = findViewById(R.id.cadastrar);
+        esqueciCep = findViewById(R.id.localizaCep);
 
     }
 

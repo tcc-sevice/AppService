@@ -20,10 +20,20 @@
     </string-array>
 
     <string-array name="categorias">
-        <item>Elétrica</item>
-        <item>Mecânica</item>
-        <item>Residencial</item>
-        <item>Construção civil</item>
         <item>Cuidador</item>
+        <item>Culinária</item>
+        <item>Elétrica</item>
+        <item>Eletrônica</item>
+        <item>Encanamento</item>
+        <item>Eventos</item>
+        <item>Frete</item>
+        <item>Informática</item>
+        <item>Instalação</item>
+        <item>Limpeza</item>
+        <item>Manutenção</item>
+        <item>Mecânica</item>
+        <item>Montagem de móveis</item>
+        <item>Pintura</item>
+        <item>Residencial</item>
     </string-array>
 </resources>

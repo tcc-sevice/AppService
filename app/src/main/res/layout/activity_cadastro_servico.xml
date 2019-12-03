@@ -68,7 +68,7 @@
         android:background="@drawable/background_caixa_texto"
         android:ems="10"
         android:hint="Título"
-        android:inputType="textPersonName"
+        android:inputType="textCapWords"
         android:padding="10dp" />
 
     <com.blackcat.currencyedittext.CurrencyEditText
@@ -100,7 +100,7 @@
         android:background="@drawable/background_caixa_texto"
         android:ems="10"
         android:hint="Descrição"
-        android:inputType="textPersonName"
+        android:inputType="textCapWords"
         android:padding="10dp" />
 
     <Button

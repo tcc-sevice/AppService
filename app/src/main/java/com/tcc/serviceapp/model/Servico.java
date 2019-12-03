@@ -1,6 +1,13 @@
 package com.tcc.serviceapp.model;
 
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.tcc.serviceapp.helper.ConfiguracaoFirebase;
 
@@ -17,6 +24,9 @@ public class Servico implements Serializable {
     private String valor;
     private String descricao;
     private List<String> fotos;
+    private String nomeUsuario;
+    private String urlFotoUsuario;
+    private String telUsuario;
 
     // Construtor
     public Servico() {
@@ -31,6 +41,20 @@ public class Servico implements Serializable {
 
         // Recebe o ID do usuário conectado
         String idUsuario = ConfiguracaoFirebase.getIdUsuario();
+
+        // Retorna o CPF do usuário conectado, para referencia no banco
+        DatabaseReference userRef = ConfiguracaoFirebase.getFirebase()
+                .child("usuarios");
+        userRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.i("FIREBASE", dataSnapshot.getValue().toString());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
+        });
+
 
         // Referencia do banco de dados
         DatabaseReference servicoRef = ConfiguracaoFirebase.getFirebase()
@@ -146,5 +170,26 @@ public class Servico implements Serializable {
     }
     public void setFotos(List<String> fotos) {
         this.fotos = fotos;
+    }
+
+    public String getNomeUsuario() {
+        return nomeUsuario;
+    }
+    public void setNomeUsuario(String nomeUsuario) {
+        this.nomeUsuario = nomeUsuario;
+    }
+
+    public String getUrlFotoUsuario() {
+        return urlFotoUsuario;
+    }
+    public void setUrlFotoUsuario(String urlFotoUsuario) {
+        this.urlFotoUsuario = urlFotoUsuario;
+    }
+
+    public String getTelUsuario() {
+        return telUsuario;
+    }
+    public void setTelUsuario(String telUsuario) {
+        this.telUsuario = telUsuario;
     }
 }

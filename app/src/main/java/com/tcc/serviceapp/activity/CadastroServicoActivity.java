@@ -31,6 +31,7 @@ import com.tcc.serviceapp.R;
 import com.tcc.serviceapp.helper.ConfiguracaoFirebase;
 import com.tcc.serviceapp.helper.ValidaPermissoes;
 import com.tcc.serviceapp.model.Servico;
+import com.tcc.serviceapp.model.Usuario;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -209,8 +210,9 @@ public class CadastroServicoActivity extends AppCompatActivity implements View.O
             if (!servico.getLocalidade().isEmpty()){
                 if (!servico.getCategoria().isEmpty()){
                     if (!servico.getNomeServico().isEmpty()){
-                        if (!String.valueOf(campoValorServico.getRawValue()).isEmpty()
-                                && !String.valueOf(campoValorServico.getRawValue()).equals("0")){
+                        if ((!String.valueOf(campoValorServico.getRawValue()).isEmpty()
+                                && !String.valueOf(campoValorServico.getRawValue()).equals("0"))
+                                    || checkBox_valorCombinar.isChecked()){
                             if (!servico.getDescricao().isEmpty()){
                                 // Se todas as validações forem completadas corretamente, o serviço é salvo
                                 salvarServico();
@@ -246,13 +248,19 @@ public class CadastroServicoActivity extends AppCompatActivity implements View.O
     }
 
     /* Configura um objeto serviço para ser utilizado nas validações e/ou afins,
-    recuperando todos os dados da interface*/
+    recuperando todos os dados da interface e alguns do usuário*/
     private Servico configurarServico(){
         Servico servico = new Servico();
         servico.setLocalidade(campoLocalidade.getSelectedItem().toString());
         servico.setCategoria(campoCategoria.getSelectedItem().toString());
         servico.setNomeServico(campoNomeServico.getText().toString());
-        servico.setValor(campoValorServico.getText().toString());
+        if (checkBox_valorCombinar.isChecked()){
+            String valoraCombinar = "Valor a combinar";
+            servico.setValor(valoraCombinar);
+        }
+        else {
+            servico.setValor(campoValorServico.getText().toString());
+        }
         servico.setDescricao(campoDescricaoServico.getText().toString());
 
         return servico;
@@ -317,9 +325,13 @@ public class CadastroServicoActivity extends AppCompatActivity implements View.O
         });
     }
 
+    // Tratamento do check box para esconder/mostrar campo de valor
     public void definirValorCombinar(View view){
         if (checkBox_valorCombinar.isChecked()){
             campoValorServico.setVisibility(View.GONE);
+        }
+        else {
+            campoValorServico.setVisibility(View.VISIBLE);
         }
     }
 

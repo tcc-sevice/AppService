@@ -58,7 +58,7 @@ public class EnderecoActivity extends AppCompatActivity {
     private Usuario usuario;
     private Uri uri;
 
-
+  
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -225,6 +225,96 @@ public class EnderecoActivity extends AppCompatActivity {
     public String removeCaracteresEspeciais (String rmcaracter){
         rmcaracter = rmcaracter.replaceAll("[^a-zZ-Z0-9 ]", "");
         return rmcaracter;
+    }
+
+    private void carregaFoto(Bitmap imagem) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        imagem.compress(Bitmap.CompressFormat.JPEG, 70, baos);
+        byte[] dadosImagem = baos.toByteArray();
+
+        StorageReference imageRef = storageReference.child("Imagens")
+                .child("Perfil")
+                .child( idFoto + ".jpeg");
+
+        UploadTask uploadTask = imageRef.putBytes(dadosImagem);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(EnderecoActivity.this,
+                        "Erro ao fazer upload da imagem" ,
+                        Toast.LENGTH_SHORT).show();
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                // Esconde o texto "Carregar imagem" abaixo da foto de perfil
+                findViewById(R.id.textView_carregarImagem).setVisibility(View.GONE);
+
+                /*Toast.makeText(CadastroUsuarioActivity.this,
+                        "Sucesso ao fazer upload da imagem" ,
+                        Toast.LENGTH_SHORT).show();*/
+            }
+        });
+    }
+    
+    private String preencheUser(String campoNome, String campoSobrenome, String campoCpf, Date campoDataNascimento, String campoEmail, String campoTelefone, String campoSenha, String campoConfirmarSenha, String campoSexo) {
+
+        final Usuario usuario = new Usuario();
+        usuario.setNome(campoNome);
+        usuario.setSobrenome(campoSobrenome);
+        usuario.setCpf(campoCpf);
+        usuario.setDataNascimento(campoDataNascimento);
+        usuario.setSexo(campoSexo);
+        usuario.setEmail(campoEmail);
+        usuario.setTelefone(campoTelefone);
+        usuario.setSenha(campoSenha);
+        usuario.setConfirmaSenha(campoConfirmarSenha);
+
+
+        //FirebaseApp.initializeApp(this);
+        autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
+        autenticacao.createUserWithEmailAndPassword(
+                usuario.getEmail(),
+                usuario.getSenha()).addOnCompleteListener(
+                new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+
+                        if( task.isSuccessful() ){
+                            try {
+                                String idUsuario =  task.getResult().getUser().getUid();
+                                usuario.setId(idUsuario);
+                                usuario.Salvar(usuario);
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+                        }else {
+
+                            String erroExcecao = "";
+                            try{
+                                throw task.getException();
+                            }catch (FirebaseAuthWeakPasswordException e){
+                                erroExcecao = "Digite uma senha mais forte, use combinações de letras e números !";
+                            }catch (FirebaseAuthInvalidCredentialsException e){
+                                erroExcecao = "Por favor, digite um e-mail válido !";
+                            }catch (FirebaseAuthUserCollisionException e){
+                                erroExcecao = "Este e-mail já está cadastrado !";
+                            } catch (Exception e) {
+                                erroExcecao = "ao cadastrar usuário: "  + e.getMessage();
+                                e.printStackTrace();
+                            }
+
+                            Toast.makeText(EnderecoActivity.this,
+                                    "Erro: " + erroExcecao ,
+                                    Toast.LENGTH_SHORT).show();
+
+                        }
+                    }
+                }
+        );
+
+        return usuario.getId();
     }
 
     private Endereco preenchaEndereco(String campoCidade, String campoBairro, String campoRua, String campoNumero,

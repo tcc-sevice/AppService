@@ -68,19 +68,29 @@
         android:background="@drawable/background_caixa_texto"
         android:ems="10"
         android:hint="Título"
-        android:inputType="textPersonName"
+        android:inputType="textCapWords"
         android:padding="10dp" />
 
     <com.blackcat.currencyedittext.CurrencyEditText
         android:id="@+id/editText_valorServico"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
         android:background="@drawable/background_caixa_texto"
         android:ems="10"
         android:hint="Valor"
         android:inputType="textPersonName"
+        android:maxLength="13"
         android:padding="10dp" />
+
+    <CheckBox
+        android:id="@+id/checkBox_valorCombinar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_weight="0"
+        android:onClick="definirValorCombinar"
+        android:text="Valor a combinar"
+        android:textSize="18sp" />
 
     <EditText
         android:id="@+id/editText_descricaoServico"
@@ -90,7 +100,7 @@
         android:background="@drawable/background_caixa_texto"
         android:ems="10"
         android:hint="Descrição"
-        android:inputType="textPersonName"
+        android:inputType="textCapWords"
         android:padding="10dp" />
 
     <Button

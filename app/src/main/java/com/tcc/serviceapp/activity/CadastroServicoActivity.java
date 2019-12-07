@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -21,14 +22,24 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.blackcat.currencyedittext.CurrencyEditText;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.tcc.serviceapp.R;
 import com.tcc.serviceapp.helper.ConfiguracaoFirebase;
 import com.tcc.serviceapp.helper.ValidaPermissoes;
 import com.tcc.serviceapp.model.Servico;
+import com.tcc.serviceapp.model.Usuario;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,10 +49,12 @@ import dmax.dialog.SpotsDialog;
 
 public class CadastroServicoActivity extends AppCompatActivity implements View.OnClickListener{
 
+    // Atributos
     private ImageView imagem1, imagem2, imagem3;
     private Spinner campoLocalidade, campoCategoria;
     private EditText campoNomeServico, campoDescricaoServico;
     private CurrencyEditText campoValorServico;
+    private CheckBox checkBox_valorCombinar;
 
     private String[] permissoes = new String[]{
             Manifest.permission.READ_EXTERNAL_STORAGE
@@ -54,6 +67,9 @@ public class CadastroServicoActivity extends AppCompatActivity implements View.O
     private StorageReference storage;
 
     private android.app.AlertDialog dialog;
+    private DatabaseReference firebaseRef;
+    private DatabaseReference usuariosRef;
+    private Usuario usuario;
 
 
     @Override
@@ -69,8 +85,10 @@ public class CadastroServicoActivity extends AppCompatActivity implements View.O
 
         // Inicialização de componentes necessários da interface
         inicializarComponentes();
+        firebaseRef = ConfiguracaoFirebase.getFirebase();
+        usuariosRef = firebaseRef.child("usuarios");
         storage = ConfiguracaoFirebase.getFirebaseStorage();
-
+        devolveUsuarioLogado();
         // Carrega itens nos spinners
         carregarSpinner();
     }
@@ -141,29 +159,23 @@ public class CadastroServicoActivity extends AppCompatActivity implements View.O
         campoNomeServico = findViewById(R.id.editText_nomeServico);
         campoDescricaoServico = findViewById(R.id.editText_descricaoServico);
         campoValorServico = findViewById(R.id.editText_valorServico);
+        checkBox_valorCombinar = findViewById(R.id.checkBox_valorCombinar);
         // Configura localidade do campo de valor para pt-br, para que a moeda seja o Real
         campoValorServico.setLocale(new Locale("pt", "BR"));
         campoValorServico.setText(null);
     }
 
-    // Preenche os Spinners (combobox) com informações
+    // Preenche os Spinners (combobox) com informações contidas no strings.xml
     private void carregarSpinner(){
-        String[] cidades = new String[]{
-                "Campinas",
-                "Louveira",
-                "Valinhos",
-                "Vinhedo"};
+        // Configuração spinner de locais
+        String[] cidades = getResources().getStringArray(R.array.localidades);
         ArrayAdapter<String> adapterLocalidade = new ArrayAdapter<String>(
                 this, android.R.layout.simple_spinner_item, cidades);
         adapterLocalidade.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         campoLocalidade.setAdapter(adapterLocalidade);
 
-        String[] categorias = new String[]{
-                "Elétrica",
-                "Mecânica",
-                "Residencial",
-                "Construção civil",
-                "Cuidador"};
+        // Configuração spinner de categorias
+        String[] categorias = getResources().getStringArray(R.array.categorias);
         ArrayAdapter<String> adapterCategoria = new ArrayAdapter<String>(
                 this, android.R.layout.simple_spinner_item, categorias);
         adapterCategoria.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -211,8 +223,9 @@ public class CadastroServicoActivity extends AppCompatActivity implements View.O
             if (!servico.getLocalidade().isEmpty()){
                 if (!servico.getCategoria().isEmpty()){
                     if (!servico.getNomeServico().isEmpty()){
-                        if (!String.valueOf(campoValorServico.getRawValue()).isEmpty()
-                                && !String.valueOf(campoValorServico.getRawValue()).equals("0")){
+                        if ((!String.valueOf(campoValorServico.getRawValue()).isEmpty()
+                                && !String.valueOf(campoValorServico.getRawValue()).equals("0"))
+                                    || checkBox_valorCombinar.isChecked()){
                             if (!servico.getDescricao().isEmpty()){
                                 // Se todas as validações forem completadas corretamente, o serviço é salvo
                                 salvarServico();
@@ -238,7 +251,7 @@ public class CadastroServicoActivity extends AppCompatActivity implements View.O
             }
         }
         else{
-            exibirMensagemErro("Selecione ao menos uma foto !");
+            exibirMensagemErro("Adicione ao menos uma foto !");
         }
     }
 
@@ -248,16 +261,50 @@ public class CadastroServicoActivity extends AppCompatActivity implements View.O
     }
 
     /* Configura um objeto serviço para ser utilizado nas validações e/ou afins,
-    recuperando todos os dados da interface*/
+    recuperando todos os dados da interface e alguns do usuário*/
     private Servico configurarServico(){
         Servico servico = new Servico();
         servico.setLocalidade(campoLocalidade.getSelectedItem().toString());
         servico.setCategoria(campoCategoria.getSelectedItem().toString());
         servico.setNomeServico(campoNomeServico.getText().toString());
-        servico.setValor(campoValorServico.getText().toString());
+        servico.setNomeUsuario(usuario.getNome());
+        servico.setTelUsuario(removeCaracteresEspeciais(usuario.getTelefone()));
+        if (checkBox_valorCombinar.isChecked()){
+            String valoraCombinar = "Valor a combinar";
+            servico.setValor(valoraCombinar);
+        }
+        else {
+            servico.setValor(campoValorServico.getText().toString());
+        }
         servico.setDescricao(campoDescricaoServico.getText().toString());
 
         return servico;
+    }
+
+    public String removeCaracteresEspeciais (String rmcaracter){
+        rmcaracter = rmcaracter.replaceAll("[^a-zZ-Z0-9 ]", "");
+        return rmcaracter;
+    }
+
+    private void devolveUsuarioLogado(){
+        DatabaseReference usuarios = FirebaseDatabase.getInstance().getReference();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String email = user.getEmail();
+        usuarios.child("usuarios").addListenerForSingleValueEvent(new ValueEventListener() {
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot snap : dataSnapshot.getChildren()) {
+                    if (email.equals(snap.child("email").getValue())) {
+
+                       usuario = snap.getValue(Usuario.class);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
     }
 
     // Após o devido tratamento, salva os dados do serviço a ser cadastrado
@@ -290,34 +337,43 @@ public class CadastroServicoActivity extends AppCompatActivity implements View.O
 
         // Faz o upload do arquivo de imagem
         UploadTask uploadTask = imagemServico.putFile(Uri.parse(urlString));
-        // Em caso de sucesso
-        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+        uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
             @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-                // String com o endereço completo da imagem no Firebase
-                String urlConvertida = taskSnapshot.getMetadata().getReference().getDownloadUrl().toString();
-
-                listaUrlFotos.add(urlConvertida);
-                // Condição para o upload do número de fotos adicionadas
-                if (totalFotos == listaUrlFotos.size()){
-                    servico.setFotos(listaUrlFotos);
-                    // Salva informações do serviço no banco de dados
-                    servico.salvar();
-                    // Interrompe o dialog de progresso
-                    dialog.dismiss();
-                    // Finaliza a activity
-                    finish();
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                if (!task.isSuccessful()){
+                    throw task.getException();
+                }
+                return imagemServico.getDownloadUrl();
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                if (task.isSuccessful()){
+                    Uri downloadUrl = task.getResult();
+                    listaUrlFotos.add(downloadUrl.toString());
+                    // Condição para o upload do número de fotos adicionadas
+                    if (totalFotos == listaUrlFotos.size()){
+                        servico.setFotos(listaUrlFotos);
+                        // Salva informações do serviço no banco de dados
+                        servico.salvarServico();
+                        // Interrompe o dialog de progresso
+                        dialog.dismiss();
+                        // Finaliza a activity
+                        finish();
+                    }
                 }
             }
-        // Em caso de erro
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                exibirMensagemErro("Falha ao fazer upload de imagem");
-            }
         });
+    }
 
+    // Tratamento do check box para esconder/mostrar campo de valor
+    public void definirValorCombinar(View view){
+        if (checkBox_valorCombinar.isChecked()){
+            campoValorServico.setVisibility(View.GONE);
+        }
+        else {
+            campoValorServico.setVisibility(View.VISIBLE);
+        }
     }
 
 }

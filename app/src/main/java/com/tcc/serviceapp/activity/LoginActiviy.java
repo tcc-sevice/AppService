@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -18,10 +19,13 @@ import com.tcc.serviceapp.R;
 import com.tcc.serviceapp.helper.ConfiguracaoFirebase;
 import com.tcc.serviceapp.model.Usuario;
 
+import org.w3c.dom.Text;
+
 public class LoginActiviy extends AppCompatActivity {
 
     // Atributos de manipulação dos componentes da interface
     private EditText email, senha;
+    private TextView resetSenha;
     private Button logar;
 
     @Override
@@ -33,6 +37,15 @@ public class LoginActiviy extends AppCompatActivity {
         getSupportActionBar().hide();
         // Configurações iniciais
         inicializaComponente();
+
+        resetSenha.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                startActivity(new Intent(getApplicationContext(), ResetSenhaActivity.class));
+
+            }
+        });
 
         // Método chamado com o clique do botão "Entrar" da tela de login
         logar.setOnClickListener(new View.OnClickListener() {
@@ -67,9 +80,10 @@ public class LoginActiviy extends AppCompatActivity {
 
     // Inicializa atributos dessa classe com os componentes da interface
     public void inicializaComponente() {
-        email = findViewById(R.id.emailLogin);
-        senha = findViewById(R.id.senhaLogin);
-        logar = findViewById(R.id.login);
+        email        = findViewById(R.id.emailLogin);
+        senha        = findViewById(R.id.senhaLogin);
+        logar        = findViewById(R.id.login);
+        resetSenha   = findViewById(R.id.esquecisenha);
     }
 
     // Método para fazer a validação dos dados para login

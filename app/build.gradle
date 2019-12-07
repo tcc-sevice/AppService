@@ -35,7 +35,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'com.google.code.gson:gson:2.8.5'
 
-    // Dependencias Firebase
+    // Dependencias Firebase (banco de dados, armazenamento de imagens e serviço de autenticação)
     implementation 'com.google.firebase:firebase-core:17.2.1'
     implementation 'com.google.firebase:firebase-database:19.2.0'
     implementation 'com.google.firebase:firebase-storage:19.1.0'
@@ -43,14 +43,20 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-storage:0.6.0'
 
     // Dependencias de mascaras de formatações de textViews
-    implementation 'com.github.rtoshiro.mflibrary:mflibrary:1.0.0' // Datas e telefones
+    implementation 'com.github.rtoshiro.mflibrary:mflibrary:1.0.0' // Datas e números de telefones
     implementation 'com.github.BlacKCaT27:CurrencyEditText:2.0.2' // Moeda
 
-    // Dependencia circle imageview
+    // Dependencia circle imageview (imagens com formato circularizado)
     implementation 'de.hdodenhof:circleimageview:3.0.1'
 
-    // Dependencia de dialog de progresso
+    // Dependencia dialog de progresso
     implementation 'com.github.d-max:spots-dialog:1.1@aar'
+
+    // Dependencia picasso (download e cashing de imagens)
+    implementation 'com.squareup.picasso:picasso:2.71828'
+
+    // Dependencia carousel view (visualização de imagens em sequencia)
+    implementation 'com.synnapps:carouselview:0.1.5'
 
 }
 //Dependencias Firebase

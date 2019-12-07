@@ -13,13 +13,13 @@
         android:layout_height="43dp"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="27dp"
         android:hint="Cep"
         android:inputType="number"
         android:textColor="@color/textpreto"
         app:layout_constraintEnd_toStartOf="@+id/localizaCep"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/localizacao" />
+        app:layout_constraintTop_toBottomOf="@+id/fotoPerfil" />
 
     <EditText
         android:id="@+id/rua"
@@ -31,7 +31,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:hint="Rua"
-        android:inputType="textPostalAddress"
+        android:inputType="textCapWords"
         android:textColor="@color/textpreto"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -48,7 +48,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:hint="Complemento"
-        android:inputType="textNoSuggestions"
+        android:inputType="textCapWords"
         android:textColor="@color/textpreto"
         app:layout_constraintEnd_toStartOf="@+id/numero"
         app:layout_constraintStart_toStartOf="parent"
@@ -80,7 +80,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:hint="Bairro"
-        android:inputType="text"
+        android:inputType="textCapWords"
         android:textColor="@color/textpreto"
         app:layout_constraintEnd_toStartOf="@+id/cidade"
         app:layout_constraintStart_toStartOf="parent"
@@ -96,41 +96,27 @@
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:hint="Cidade"
-        android:inputType="text|textPostalAddress"
+        android:inputType="textCapWords"
         android:textColor="@color/textpreto"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/bairro"
         app:layout_constraintTop_toBottomOf="@+id/numero" />
 
-    <Button
-        android:id="@+id/localizacao"
-        android:layout_width="283dp"
-        android:layout_height="55dp"
-        android:layout_marginStart="64dp"
-        android:layout_marginLeft="64dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="64dp"
-        android:layout_marginRight="64dp"
-        android:text="Utilizar Localização Atual"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fotoPerfil" />
-
     <de.hdodenhof.circleimageview.CircleImageView
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/fotoPerfil"
-        android:layout_width="0dp"
-        android:layout_height="114dp"
+        android:layout_width="238dp"
+        android:layout_height="190dp"
         android:layout_marginStart="100dp"
         android:layout_marginLeft="100dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="100dp"
         android:layout_marginRight="100dp"
+        android:layout_marginBottom="27dp"
+        android:src="@drawable/avatar"
+        app:layout_constraintBottom_toTopOf="@+id/cep"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:src="@drawable/avatar" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 
     <TextView
@@ -157,7 +143,6 @@
         android:layout_marginRight="24dp"
         android:layout_marginBottom="8dp"
         android:background="@drawable/background_botao"
-        android:onClick="cadastrarEndereco"
         android:text="Enviar Cadastro"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -3,7 +3,10 @@ package com.tcc.serviceapp.activity;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
@@ -14,6 +17,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.rtoshiro.util.format.SimpleMaskFormatter;
@@ -27,8 +31,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.tcc.serviceapp.R;
 import com.tcc.serviceapp.helper.ConfiguracaoFirebase;
 import com.tcc.serviceapp.helper.ValidaDados;
@@ -40,6 +48,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -51,10 +60,11 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
     private CircleImageView fotoPerfil;
     private static final int SELECAO_GALERIA = 200;
     private FirebaseAuth autenticacao;
-    private String idFoto;
     private Calendar calendar;
     private Usuario usuario;
-    private Uri url; // Para acessar fotos do storage?
+    private Uri url;
+    private DatabaseReference firebaseRef;
+    private DatabaseReference usuariosRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +79,9 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
 
         // Método que faz máscaras (formatação padão) para os campos de CPF, data de nascimento e telefone
         formatMascara();
-
+        //
+        firebaseRef = ConfiguracaoFirebase.getFirebase();
+        usuariosRef = firebaseRef.child("usuarios");
         //
         fotoPerfil.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,7 +92,6 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
                 }
             }
         });
-
         //
         final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
             @Override
@@ -109,7 +120,6 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 
     // Inicializa componentes necessários da interface ao criar nova instância de cadastro
@@ -140,15 +150,17 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
             try {
                 switch (requestCode) {
                     case SELECAO_GALERIA:
-                        Uri localImagem = data.getData();
+                        url = data.getData();
                         imagem = MediaStore.Images
                                 .Media
-                                .getBitmap(getContentResolver(), localImagem);
+                                .getBitmap(getContentResolver(), url);
                         break;
                 }
                 if (imagem != null) {
 
                     fotoPerfil.setImageBitmap(imagem);
+                    // Esconde o texto "Carregar imagem" abaixo da foto de perfil
+                    findViewById(R.id.textView_carregarImagem).setVisibility(View.GONE);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -210,25 +222,47 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
 
             Date dataNascimento = formatDate(campoDataNascimento);
 
-            fotoPerfil.buildDrawingCache();
-            Bitmap bitmap = fotoPerfil.getDrawingCache();
+            Drawable drawable = fotoPerfil.getDrawable();
+            Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            byte[] imageInByte = stream.toByteArray();
 
-            Intent intent = new Intent(CadastroUsuarioActivity.this, EnderecoActivity.class);
-            intent.putExtra("BitmapImage", bitmap);
-            intent.putExtra("email", campoEmail);
-            intent.putExtra("senha", campoSenha);
-            intent.putExtra("nome", campoNome);
-            intent.putExtra("sobrenome", campoSobrenome);
-            intent.putExtra("cpf", campoCpf);
-            intent.putExtra("dataNascimento",dataNascimento);
-            intent.putExtra("telefone", campoTelefone);
-            intent.putExtra("confirmarSenha", campoConfirmarSenha);
-            intent.putExtra("sexo", campoSexo);
+            final Usuario usuario = new Usuario();
+            usuario.setNome(campoNome);
+            usuario.setSobrenome(campoSobrenome);
+            usuario.setCpf(campoCpf);
+            usuario.setDataNascimento(dataNascimento);
+            usuario.setSexo(campoSexo);
+            usuario.setEmail(campoEmail);
+            usuario.setTelefone(campoTelefone);
+            usuario.setSenha(campoSenha);
+            usuario.setConfirmaSenha(campoConfirmarSenha);
 
-            startActivity(intent);
+            Intent intent = new Intent(getApplicationContext(), EnderecoActivity.class);
+            intent.putExtra("BitmapImage", imageInByte);
+            intent.putExtra("usuario", usuario);
+            intent.putExtra("url", url);
+            Query clienteCnpj = usuariosRef.orderByChild("cpf").equalTo(campoCpf);
+
+            clienteCnpj.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        cpf.setError("Digite um novo Cpf");
+                    } else {
+                        startActivity(intent);
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
         }
     }
-
     private String validaSexo(){
 
         String sexo = "outro";
@@ -295,65 +329,65 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
                 if(campoCpf.length() == 14){
                     if( campoDataNascimento.length() == 10 ){
                         if( masculino.isChecked()||
-                            feminino.isChecked()||
-                            outro.isChecked()){
-                              if( !campoEmail.isEmpty()){
-                                  if( campoTelefone.length() == 16){
-                                      if (validaSenha(campoSenha,campoConfirmarSenha).equals("N")) {
-                                          if (validateEmailFormat(campoEmail)){
-                                              if (validaCpf(campoCpf).equals("N")){
-                                                  if (ValidaDados.validadeData(campoDataNascimento).equals("N")) {
-                                                      retornoErro = "N";
-                                                  }else{
-                                                      Toast.makeText(CadastroUsuarioActivity.this,
-                                                                     "Digite uma data de nascimento válida !",
-                                                                      Toast.LENGTH_SHORT).show();
-                                                  }
-                                              }else{
-                                                     Toast.makeText( CadastroUsuarioActivity.this,
-                                                                     "Digite um CPF válido !",
-                                                                      Toast.LENGTH_SHORT).show();
-                                              }
-                                          }else{
-                                              Toast.makeText( CadastroUsuarioActivity.this,
-                                                      "O e-mail digitado é inválido !",
-                                                      Toast.LENGTH_SHORT).show();
-                                          }
-                                      }
-                                  }else{
-                                      Toast.makeText( CadastroUsuarioActivity.this,
-                                                      "Preencha o telefone !",
-                                                       Toast.LENGTH_SHORT).show();
+                                feminino.isChecked()||
+                                outro.isChecked()){
+                            if( !campoEmail.isEmpty()){
+                                if( campoTelefone.length() == 16){
+                                    if (validaSenha(campoSenha,campoConfirmarSenha).equals("N")) {
+                                        if (validateEmailFormat(campoEmail)){
+                                            if (validaCpf(campoCpf).equals("N")){
+                                                if (ValidaDados.validadeData(campoDataNascimento).equals("N")) {
+                                                    retornoErro = "N";
+                                                }else{
+                                                    Toast.makeText(CadastroUsuarioActivity.this,
+                                                            "Digite uma data de nascimento válida !",
+                                                            Toast.LENGTH_SHORT).show();
+                                                }
+                                            }else{
+                                                Toast.makeText( CadastroUsuarioActivity.this,
+                                                        "Digite um CPF válido !",
+                                                        Toast.LENGTH_SHORT).show();
+                                            }
+                                        }else{
+                                            Toast.makeText( CadastroUsuarioActivity.this,
+                                                    "O e-mail digitado é inválido !",
+                                                    Toast.LENGTH_SHORT).show();
+                                        }
                                     }
                                 }else{
                                     Toast.makeText( CadastroUsuarioActivity.this,
-                                                    "Preencha seu e-mail !",
-                                                     Toast.LENGTH_SHORT).show();
+                                            "Preencha o telefone !",
+                                            Toast.LENGTH_SHORT).show();
                                 }
                             }else{
                                 Toast.makeText( CadastroUsuarioActivity.this,
-                                                "Preencha seu sexo !",
-                                                Toast.LENGTH_SHORT).show();
+                                        "Preencha seu e-mail !",
+                                        Toast.LENGTH_SHORT).show();
                             }
+                        }else{
+                            Toast.makeText( CadastroUsuarioActivity.this,
+                                    "Preencha seu sexo !",
+                                    Toast.LENGTH_SHORT).show();
+                        }
                     }else{
                         Toast.makeText( CadastroUsuarioActivity.this,
-                                        "Preencha a data de nascimento !",
-                                        Toast.LENGTH_SHORT).show();
+                                "Preencha a data de nascimento !",
+                                Toast.LENGTH_SHORT).show();
                     }
                 }else{
                     Toast.makeText( CadastroUsuarioActivity.this,
-                                    "Preencha seu CPF !",
-                                    Toast.LENGTH_SHORT).show();
+                            "Preencha seu CPF !",
+                            Toast.LENGTH_SHORT).show();
                 }
             }else{
                 Toast.makeText( CadastroUsuarioActivity.this,
-                                "Preencha seu sobrenome !",
-                                Toast.LENGTH_SHORT).show();
+                        "Preencha seu sobrenome !",
+                        Toast.LENGTH_SHORT).show();
             }
         }else{
             Toast.makeText( CadastroUsuarioActivity.this,
-                            "Preencha seu nome !",
-                            Toast.LENGTH_SHORT).show();
+                    "Preencha seu nome !",
+                    Toast.LENGTH_SHORT).show();
         }
 
         return retornoErro;

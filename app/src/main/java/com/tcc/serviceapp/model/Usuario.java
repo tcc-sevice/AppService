@@ -6,9 +6,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
 import com.tcc.serviceapp.helper.ConfiguracaoFirebase;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Usuario {
+public class Usuario implements Serializable {
 
     private String id;
     private String nome;
@@ -21,7 +22,6 @@ public class Usuario {
     private String senha;
     private String confirmaSenha;
     private String idFoto;
-    private Uri    caminhoFotoPerfil = null;
 
     public Usuario() {
     }
@@ -111,10 +111,4 @@ public class Usuario {
         this.idFoto = idFoto;
     }
 
-    public Uri getCaminhoFotoPerfil() {
-        return caminhoFotoPerfil;
-    }
-    public void setCaminhoFotoPerfil(Uri caminhoFotoPerfil) {
-        this.caminhoFotoPerfil = caminhoFotoPerfil;
-    }
 }

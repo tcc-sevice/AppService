@@ -1,12 +1,14 @@
 package com.tcc.serviceapp.activity;
 
+import android.Manifest;
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
@@ -17,29 +19,20 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.rtoshiro.util.format.SimpleMaskFormatter;
 import com.github.rtoshiro.util.format.text.MaskTextWatcher;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
-import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.tcc.serviceapp.R;
 import com.tcc.serviceapp.helper.ConfiguracaoFirebase;
 import com.tcc.serviceapp.helper.ValidaDados;
+import com.tcc.serviceapp.helper.ValidaPermissoes;
 import com.tcc.serviceapp.model.Usuario;
 
 import java.io.ByteArrayOutputStream;
@@ -48,8 +41,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Objects;
-import java.util.UUID;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -59,12 +50,13 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
     private RadioButton masculino, feminino, outro;
     private CircleImageView fotoPerfil;
     private static final int SELECAO_GALERIA = 200;
-    private FirebaseAuth autenticacao;
     private Calendar calendar;
-    private Usuario usuario;
     private Uri url;
-    private DatabaseReference firebaseRef;
     private DatabaseReference usuariosRef;
+
+    private String[] permissoes = new String[]{
+            Manifest.permission.READ_EXTERNAL_STORAGE
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,15 +66,20 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
         // Define o título da barra superior:
         getSupportActionBar().setTitle("Sevice - Cadastre seus dados");
 
+        // Validando permissão da galeria de fotos, utilizando método da classe ValidaPermissoes
+        ValidaPermissoes.validarPermissoes(permissoes, this,1);
+
         // Inicialização de componentes necessários da interface
         inicializarComponentes();
 
         // Método que faz máscaras (formatação padão) para os campos de CPF, data de nascimento e telefone
         formatMascara();
-        //
-        firebaseRef = ConfiguracaoFirebase.getFirebase();
+
+        // Referencias para o banco de dados do Firebase
+        DatabaseReference firebaseRef = ConfiguracaoFirebase.getFirebase();
         usuariosRef = firebaseRef.child("usuarios");
-        //
+
+        // Adiciona evento de clique no componente de imagem de perfil
         fotoPerfil.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -92,7 +89,8 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
                 }
             }
         });
-        //
+
+        // Configurações do campo de data de nascimento
         final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear,
@@ -168,6 +166,7 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
         }
     }
 
+    //
     private Date formatDate(String dataNascimento) throws ParseException {
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
@@ -183,7 +182,7 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
 
         return dataFormatada;
     }
-
+    //
     private boolean validateEmailFormat(final String email) {
         if (android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             return true;
@@ -207,6 +206,7 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
         telefone.addTextChangedListener(formatTel);
     }
 
+    // Executado ao clicar no botão da interface, chama a validação de dados antes de abrir a próxima tela
     public void abrirEndereco(View view) throws ParseException {
         String campoNome = nome.getText().toString();
         String campoSobrenome = sobrenome.getText().toString();
@@ -218,7 +218,7 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
         String campoConfirmarSenha = confirmarSenha.getText().toString();
         String campoSexo = validaSexo();
 
-        if (validaCampos( campoNome, campoSobrenome, campoCpf,campoDataNascimento,campoEmail, campoTelefone, campoSenha, campoConfirmarSenha) == "N") {
+        if (validaCampos(campoNome, campoSobrenome, campoCpf,campoDataNascimento,campoEmail, campoTelefone, campoSenha, campoConfirmarSenha) == "N") {
 
             Date dataNascimento = formatDate(campoDataNascimento);
 
@@ -249,20 +249,19 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
-                        cpf.setError("Digite um novo Cpf");
+                        cpf.setError("Esse CPF já esta cadastrado");
                     } else {
                         startActivity(intent);
                     }
-
                 }
 
                 @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
+                public void onCancelled(DatabaseError databaseError) {}
             });
         }
     }
+
+    //
     private String validaSexo(){
 
         String sexo = "outro";
@@ -273,10 +272,9 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
         else if (feminino.isChecked()){
             sexo = "fem";
         }
-
         return sexo;
     }
-
+    //
     private String validaSenha(String senha,String confirmaSenha){
 
         String retornaErro = "N";
@@ -305,10 +303,9 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
 
             retornaErro = "S";
         }
-
         return retornaErro;
     }
-
+    //
     private String validaCpf(String cpf){
         String cpfTransform = cpf.replaceAll("[^0-9]", "");
         String retornaErro = "N";
@@ -319,6 +316,7 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
         return retornaErro;
     }
 
+    // Faz a verificação e respectiva validação do preenchimento de cada campo da interface
     private String validaCampos( String campoNome, String campoSobrenome, String campoCpf, String campoDataNascimento,
                                  String campoEmail,String campoTelefone, String campoSenha,
                                  String campoConfirmarSenha ) {
@@ -391,5 +389,34 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
         }
 
         return retornoErro;
+    }
+
+    // Trata o retorno da solicitação de permissão
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        for(int permissaoResultado : grantResults){
+            if (permissaoResultado == PackageManager.PERMISSION_DENIED){
+                alertarValidacaoPermissao();
+            }
+        }
+    }
+
+    // Mostra um alerta ao usuário quando não houver a permissão de acesso ao armazenamento
+    private void alertarValidacaoPermissao(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Permissão negada");
+        builder.setMessage("Para utilizar o Sevice, será necessário aceitar a permissão de acesso para carregar fotos");
+        builder.setCancelable(false);
+        builder.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Finaliza a CadastroUsuarioActivity, impedindo o usuário de se cadastrar
+                finish();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }

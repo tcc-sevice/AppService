@@ -47,6 +47,7 @@ import java.util.UUID;
 
 public class EnderecoActivity extends AppCompatActivity {
 
+    // Atributos
     private EditText cidade, rua, bairro, numero, complemento, cep;
     private TextView esqueciCep;
     private ImageView fotoPerfil;
@@ -57,14 +58,16 @@ public class EnderecoActivity extends AppCompatActivity {
     private Button cadastrar;
     private Usuario usuario;
     private Uri uri;
-
   
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_endereco);
+
         // Define o título da barra superior:
         getSupportActionBar().setTitle("Sevice - Cadastre seu endereço");
+
+
         inicializaComponente();
         formatMascara();
         Intent intent = getIntent();
@@ -82,7 +85,7 @@ public class EnderecoActivity extends AppCompatActivity {
             Toast.makeText(this,""+e,Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
-        uri = (Uri) intent.getParcelableExtra("url");
+        uri = intent.getParcelableExtra("url");
         usuario = (Usuario) intent.getSerializableExtra("usuario");
         esqueciCep.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,7 +96,6 @@ public class EnderecoActivity extends AppCompatActivity {
         cadastrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //FirebaseApp.initializeApp(this);
                 usuario.setId(idFoto);
                 autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
                 autenticacao.createUserWithEmailAndPassword(

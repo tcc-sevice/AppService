@@ -56,9 +56,7 @@ public class CadastroServicoActivity extends AppCompatActivity implements View.O
     private CurrencyEditText campoValorServico;
     private CheckBox checkBox_valorCombinar;
 
-    private String[] permissoes = new String[]{
-            Manifest.permission.READ_EXTERNAL_STORAGE
-    };
+    private String[] permissoes = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE};
 
     private List<String> listaFotosRecuperadas = new ArrayList<>(); // Endereços do armaz. interno
     private List<String> listaUrlFotos = new ArrayList<>(); // Endereços de fotos salvas no Firebase
@@ -85,10 +83,13 @@ public class CadastroServicoActivity extends AppCompatActivity implements View.O
 
         // Inicialização de componentes necessários da interface
         inicializarComponentes();
+
+        //
         firebaseRef = ConfiguracaoFirebase.getFirebase();
         usuariosRef = firebaseRef.child("usuarios");
         storage = ConfiguracaoFirebase.getFirebaseStorage();
         devolveUsuarioLogado();
+
         // Carrega itens nos spinners
         carregarSpinner();
     }
@@ -197,7 +198,7 @@ public class CadastroServicoActivity extends AppCompatActivity implements View.O
     private void alertarValidacaoPermissao(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Permissão negada");
-        builder.setMessage("Para carregar fotos, será necessário aceitar a permissão de acesso");
+        builder.setMessage("Para utilizar o Sevice, será necessário aceitar a permissão de acesso para carregar fotos");
         builder.setCancelable(false);
         builder.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
             @Override
@@ -220,8 +221,8 @@ public class CadastroServicoActivity extends AppCompatActivity implements View.O
 
         // Validações
         if (listaFotosRecuperadas.size() != 0){
-            if (!servico.getLocalidade().isEmpty()){
-                if (!servico.getCategoria().isEmpty()){
+            if (!servico.getLocalidade().isEmpty() && !servico.getLocalidade().equals("- Selecione")){
+                if (!servico.getCategoria().isEmpty() && !servico.getCategoria().equals("- Selecione")){
                     if (!servico.getNomeServico().isEmpty()){
                         if ((!String.valueOf(campoValorServico.getRawValue()).isEmpty()
                                 && !String.valueOf(campoValorServico.getRawValue()).equals("0"))
@@ -302,8 +303,7 @@ public class CadastroServicoActivity extends AppCompatActivity implements View.O
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
+            public void onCancelled(DatabaseError databaseError) {}
         });
     }
 

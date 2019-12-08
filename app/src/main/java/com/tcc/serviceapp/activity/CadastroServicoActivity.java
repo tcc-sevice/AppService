@@ -271,8 +271,7 @@ public class CadastroServicoActivity extends AppCompatActivity implements View.O
         servico.setNomeUsuario(usuario.getNome());
         servico.setTelUsuario(removeCaracteresEspeciais(usuario.getTelefone()));
         if (checkBox_valorCombinar.isChecked()){
-            String valoraCombinar = "Valor a combinar";
-            servico.setValor(valoraCombinar);
+            servico.setValor("Valor a combinar");
         }
         else {
             servico.setValor(campoValorServico.getText().toString());
@@ -282,11 +281,13 @@ public class CadastroServicoActivity extends AppCompatActivity implements View.O
         return servico;
     }
 
+    //
     public String removeCaracteresEspeciais (String rmcaracter){
         rmcaracter = rmcaracter.replaceAll("[^a-zZ-Z0-9 ]", "");
         return rmcaracter;
     }
 
+    //
     private void devolveUsuarioLogado(){
         DatabaseReference usuarios = FirebaseDatabase.getInstance().getReference();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();

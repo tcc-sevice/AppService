@@ -26,10 +26,10 @@ public class Usuario implements Serializable {
     public Usuario() {
     }
 
-    public void Salvar(Usuario usuario){
+    public void Salvar(){
         DatabaseReference firebaseRef = ConfiguracaoFirebase.getFirebase();
         DatabaseReference usuariosRef = firebaseRef.child("usuarios").child(getId());
-        usuariosRef.setValue(usuario);
+        usuariosRef.setValue(this);
     }
 
     public String getId() {

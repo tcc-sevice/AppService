@@ -5,9 +5,6 @@ import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -35,7 +32,6 @@ import com.tcc.serviceapp.helper.ValidaDados;
 import com.tcc.serviceapp.helper.ValidaPermissoes;
 import com.tcc.serviceapp.model.Usuario;
 
-import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -44,19 +40,17 @@ import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class CadastroUsuarioActivity extends AppCompatActivity {
+public class CadastroUsuarioActivity extends AppCompatActivity implements View.OnClickListener {
 
+    // Atributos
     private EditText dataNascimento, cpf, nome, sobrenome, email, telefone, senha, confirmarSenha;
     private RadioButton masculino, feminino, outro;
     private CircleImageView fotoPerfil;
-    private static final int SELECAO_GALERIA = 200;
     private Calendar calendar;
-    private Uri url;
+    private Uri imagemSelecionada;
     private DatabaseReference usuariosRef;
 
-    private String[] permissoes = new String[]{
-            Manifest.permission.READ_EXTERNAL_STORAGE
-    };
+    private String[] permissoes = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,17 +72,6 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
         // Referencias para o banco de dados do Firebase
         DatabaseReference firebaseRef = ConfiguracaoFirebase.getFirebase();
         usuariosRef = firebaseRef.child("usuarios");
-
-        // Adiciona evento de clique no componente de imagem de perfil
-        fotoPerfil.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                if (i.resolveActivity(getPackageManager()) != null) {
-                    startActivityForResult(i, SELECAO_GALERIA);
-                }
-            }
-        });
 
         // Configurações do campo de data de nascimento
         final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
@@ -133,36 +116,42 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
         telefone = findViewById(R.id.telefone);
         senha = findViewById(R.id.senha);
         confirmarSenha = findViewById(R.id.confirmeSenha);
-        fotoPerfil = findViewById(R.id.fotoPerfil);
         calendar = Calendar.getInstance();
+        fotoPerfil = findViewById(R.id.fotoPerfil);
+        fotoPerfil.setOnClickListener(this);
 
     }
 
+
+    // Sobreescreve o método onClick para tratamento da imagem selecionada
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.fotoPerfil){
+            carregarImagem(1);
+        }
+    }
+
+    // Abre a galeria de fotos para seleção
+    private void carregarImagem(int requestCode){
+        startActivityForResult(new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI), requestCode);
+    }
+
+    // Executado com a seleção da imagem dentro da galeria
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        // Se a imagem foi selecionada corretamente
         if (resultCode == RESULT_OK) {
-            Bitmap imagem = null;
 
-            try {
-                switch (requestCode) {
-                    case SELECAO_GALERIA:
-                        url = data.getData();
-                        imagem = MediaStore.Images
-                                .Media
-                                .getBitmap(getContentResolver(), url);
-                        break;
-                }
-                if (imagem != null) {
+            // Recupera endereço da imagem
+            imagemSelecionada = data.getData();
 
-                    fotoPerfil.setImageBitmap(imagem);
-                    // Esconde o texto "Carregar imagem" abaixo da foto de perfil
-                    findViewById(R.id.textView_carregarImagem).setVisibility(View.GONE);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            //Configura a imagem no CircleImageView
+            fotoPerfil.setImageURI(imagemSelecionada);
+
+            // Esconde o texto "Carregar imagem" abaixo da foto de perfil
+            findViewById(R.id.textView_carregarImagem).setVisibility(View.GONE);
         }
     }
 
@@ -222,12 +211,6 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
 
             Date dataNascimento = formatDate(campoDataNascimento);
 
-            Drawable drawable = fotoPerfil.getDrawable();
-            Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-            byte[] imageInByte = stream.toByteArray();
-
             final Usuario usuario = new Usuario();
             usuario.setNome(campoNome);
             usuario.setSobrenome(campoSobrenome);
@@ -238,14 +221,15 @@ public class CadastroUsuarioActivity extends AppCompatActivity {
             usuario.setTelefone(campoTelefone);
             usuario.setSenha(campoSenha);
             usuario.setConfirmaSenha(campoConfirmarSenha);
+            usuario.setIdFoto("fotoUrl");
 
+            // Envia objeto usuario e endereço local da imagem selecionada para a proxima activity
             Intent intent = new Intent(getApplicationContext(), EnderecoActivity.class);
-            intent.putExtra("BitmapImage", imageInByte);
+            intent.putExtra("imagemSelecionada", imagemSelecionada);
             intent.putExtra("usuario", usuario);
-            intent.putExtra("url", url);
-            Query clienteCnpj = usuariosRef.orderByChild("cpf").equalTo(campoCpf);
 
-            clienteCnpj.addValueEventListener(new ValueEventListener() {
+            Query usuarioCpf = usuariosRef.orderByChild("cpf").equalTo(campoCpf);
+            usuarioCpf.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {

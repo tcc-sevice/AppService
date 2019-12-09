@@ -49,7 +49,6 @@ public class CadastroUsuarioActivity extends AppCompatActivity implements View.O
     private Calendar calendar;
     private Uri imagemSelecionada;
     private DatabaseReference usuariosRef;
-
     private String[] permissoes = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE};
 
     @Override
@@ -88,8 +87,8 @@ public class CadastroUsuarioActivity extends AppCompatActivity implements View.O
             }
         };
 
-        //Adiciona um evento do tipo listener ao campo 'data de nascimento'. Quando estiver focado,
-        // um calendário será exibido para seleção da data
+        //Adiciona um evento do tipo listener ao campo 'data de nascimento'.
+        // Quando estiver focado, um calendário será exibido para seleção da data
         dataNascimento.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
@@ -228,6 +227,7 @@ public class CadastroUsuarioActivity extends AppCompatActivity implements View.O
             intent.putExtra("imagemSelecionada", imagemSelecionada);
             intent.putExtra("usuario", usuario);
 
+            // Query para verificação da existência ou não do CPF informado no banco de dados
             Query usuarioCpf = usuariosRef.orderByChild("cpf").equalTo(campoCpf);
             usuarioCpf.addValueEventListener(new ValueEventListener() {
                 @Override

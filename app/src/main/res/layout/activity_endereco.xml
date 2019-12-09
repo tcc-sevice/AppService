@@ -1,11 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/backgroundlogin"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+<androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/backgroundlogin"
     tools:context=".activity.EnderecoActivity">
+
+    <TextView
+        android:id="@+id/textView_nomeUsuarioCadastrando"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="Nome do usuário"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/cep"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fotoPerfil" />
 
     <EditText
         android:id="@+id/cep"
@@ -13,13 +31,13 @@
         android:layout_height="43dp"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
-        android:layout_marginTop="27dp"
+        android:layout_marginTop="16dp"
         android:hint="Cep"
         android:inputType="number"
         android:textColor="@color/textpreto"
         app:layout_constraintEnd_toStartOf="@+id/localizaCep"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fotoPerfil" />
+        app:layout_constraintTop_toBottomOf="@+id/textView_nomeUsuarioCadastrando" />
 
     <EditText
         android:id="@+id/rua"
@@ -109,12 +127,11 @@
         android:layout_height="190dp"
         android:layout_marginStart="100dp"
         android:layout_marginLeft="100dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="100dp"
         android:layout_marginRight="100dp"
-        android:layout_marginBottom="27dp"
         android:src="@drawable/avatar"
-        app:layout_constraintBottom_toTopOf="@+id/cep"
+        app:layout_constraintBottom_toTopOf="@+id/textView_nomeUsuarioCadastrando"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -152,3 +169,4 @@
         app:layout_constraintTop_toBottomOf="@+id/bairro" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

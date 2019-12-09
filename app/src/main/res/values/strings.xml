@@ -3,7 +3,7 @@
 
     <!--Textos com sublinhado-->
     <string name="esqueci_senha"><u>Esqueci minha senha !</u></string>
-    <string name="esqueci_cep"><u>Esqueci meu CEP !</u></string>
+    <string name="esqueci_cep"><u>Não sei meu CEP !</u></string>
     <string name="aplicar_filtros"><u>Aplicar filtros</u></string>
     <string name="limpar_filtros"><u>Limpar filtros</u></string>
 

@@ -35,9 +35,7 @@ public class EnderecoActivity extends AppCompatActivity {
 
     // Atributos
     private EditText cidade, rua, bairro, numero, complemento, cep;
-    private TextView esqueciCep, nomeUsuarioCadastrando ;
-    private CircleImageView fotoPerfil;
-    private Endereco endereco;
+    private TextView esqueciCep;
     private FirebaseAuth autenticacao;
     private StorageReference storage;
     private Button cadastrar;
@@ -57,13 +55,13 @@ public class EnderecoActivity extends AppCompatActivity {
         imagemSelecionada = intent.getParcelableExtra("imagemSelecionada");
         usuario = (Usuario) intent.getSerializableExtra("usuario");
 
-        //
-        inicializaComponente();
+        // Inicializa os atributos com os componentes da interface necessários
+        inicializarComponente();
 
-        //
+        // Referencia do Storage do Firebase para armazenar imagens
         storage = ConfiguracaoFirebase.getFirebaseStorage();
 
-        //
+        // Atribui formatação padrão para o campo de CEP
         formatMascara();
 
         // Chamado ao clicar no texto "Esqueci meu CEP"
@@ -74,7 +72,7 @@ public class EnderecoActivity extends AppCompatActivity {
             }
         });
 
-        // Chamado ao clicar no botão cadastrar
+        // Chamado ao clicar no botão cadastrar, realiza ultimas validações, cria e salva os dados do usuario
         cadastrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -87,7 +85,8 @@ public class EnderecoActivity extends AppCompatActivity {
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
                                     try {
-                                        usuario.setId(removeCaracteresEspeciais(usuario.getCpf()));
+                                        // O CPF do usuário será como a primary key no banco de dados
+                                        usuario.setId(removerCaracteresEspeciais(usuario.getCpf()));
                                         salvarFotoStorage();
 
                                     } catch (Exception e) {
@@ -153,9 +152,9 @@ public class EnderecoActivity extends AppCompatActivity {
         });
     }
 
-    //
-    public void inicializaComponente() {
-        nomeUsuarioCadastrando = findViewById(R.id.textView_nomeUsuarioCadastrando);
+    // Inicializa os atributos com os componentes da interface necessários
+    public void inicializarComponente() {
+        TextView nomeUsuarioCadastrando = findViewById(R.id.textView_nomeUsuarioCadastrando);
         String nomeCompleto = usuario.getNome() + " " + usuario.getSobrenome();
         nomeUsuarioCadastrando.setText(nomeCompleto);
         cidade = findViewById(R.id.cidade);
@@ -164,20 +163,20 @@ public class EnderecoActivity extends AppCompatActivity {
         numero = findViewById(R.id.numero);
         complemento = findViewById(R.id.complemento);
         cep = findViewById(R.id.cep);
-        fotoPerfil = findViewById(R.id.fotoPerfil);
+        CircleImageView fotoPerfil = findViewById(R.id.fotoPerfil);
         fotoPerfil.setImageURI(imagemSelecionada);
         cadastrar = findViewById(R.id.cadastrar);
         esqueciCep = findViewById(R.id.localizaCep);
     }
 
-    //
+    // Atribui formatação padrão para o campo de CEP
     private void formatMascara() {
         SimpleMaskFormatter mascaraCep = new SimpleMaskFormatter("NNNNN-NNN");
         MaskTextWatcher formatCep = new MaskTextWatcher(cep, mascaraCep);
         cep.addTextChangedListener(formatCep);
     }
 
-    //
+    // Salva os dados de endereço do usuário, após salvar os dados pessoais, e conclui o processo
     public void cadastrarEndereco() {
         String campoCidade = cidade.getText().toString();
         String campoBairro = bairro.getText().toString();
@@ -186,20 +185,19 @@ public class EnderecoActivity extends AppCompatActivity {
         String campoCep = cep.getText().toString();
         String campoComplemento = complemento.getText().toString();
 
-        if (validaCampos(campoCidade, campoBairro, campoRua, campoNumero, campoCep)== "N") {
+        if (validarCampos(campoCidade, campoBairro, campoRua, campoNumero, campoCep)== "N") {
 
-            Endereco enderecoPersisty = preenchaEndereco(campoCidade, campoBairro, campoRua, campoNumero, campoCep, campoComplemento);
-
+            Endereco enderecoPersisty = preencherEndereco(campoCidade, campoBairro, campoRua, campoNumero, campoCep, campoComplemento);
             try {
-                enderecoPersisty.setId(removeCaracteresEspeciais(usuario.getCpf()));
+                enderecoPersisty.setId(removerCaracteresEspeciais(usuario.getCpf()));
                 enderecoPersisty.Salvar(enderecoPersisty);
 
                 Toast.makeText(this,
                         "Cadastro realizado com sucesso !",
                         Toast.LENGTH_SHORT).show();
 
-                Intent login = new Intent(EnderecoActivity.this, MainActivity.class);
-                startActivity(login);
+                // Direciona para a tela main e finaliza a activity
+                startActivity(new Intent(EnderecoActivity.this, MainActivity.class));
                 finishAffinity();
 
             } catch (Exception e) {
@@ -212,16 +210,16 @@ public class EnderecoActivity extends AppCompatActivity {
         }
     }
 
-    //
-    public String removeCaracteresEspeciais (String rmcaracter){
+    // Remove certos elemento da String de CPF para correto upload no banco de dados
+    public String removerCaracteresEspeciais(String rmcaracter){
         rmcaracter = rmcaracter.replaceAll("[^a-zZ-Z0-9 ]", "");
         return rmcaracter;
     }
 
-    //
-    private Endereco preenchaEndereco(String campoCidade, String campoBairro, String campoRua, String campoNumero,
-                                      String campoCep, String campoComplemento) {
-        endereco = new Endereco();
+    // Configura o objeto endereço
+    private Endereco preencherEndereco(String campoCidade, String campoBairro, String campoRua, String campoNumero,
+                                       String campoCep, String campoComplemento) {
+        Endereco endereco = new Endereco();
         endereco.setCidade(campoCidade);
         endereco.setBairro(campoBairro);
         endereco.setRua(campoRua);
@@ -231,9 +229,9 @@ public class EnderecoActivity extends AppCompatActivity {
         return endereco;
     }
 
-    //
-    private String validaCampos(String campoCidade, String campoBairro, String campoRua, String campoNumero,
-                              String campoCep) {
+    // Verificação de todos os campos digitados
+    private String validarCampos(String campoCidade, String campoBairro, String campoRua, String campoNumero,
+                                 String campoCep) {
         String retornoErro = "S";
         if (!campoCidade.isEmpty()) {
             if (!campoBairro.isEmpty()) {

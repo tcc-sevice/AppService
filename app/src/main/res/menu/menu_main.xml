@@ -19,7 +19,8 @@
     <group android:id="@+id/group_logado"
            android:visible="false">
         <item android:id="@+id/menu_servicos"
-              android:title="Meus serviços"/>
+              android:title="Meus serviços"
+              app:showAsAction="always"/>
         <item android:id="@+id/menu_sair"
               android:title="Sair"/>
     </group>

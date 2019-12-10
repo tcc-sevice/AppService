@@ -1,3 +1,5 @@
+// Lida com eventos de clique distintos na interface
+
 package com.tcc.serviceapp.helper;
 
 import android.content.Context;
@@ -8,7 +10,6 @@ import android.widget.AdapterView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-// Lida com eventos de clique distintos na interface
 
 public class RecyclerItemClickListener implements RecyclerView.OnItemTouchListener {
 

@@ -19,8 +19,6 @@ import com.tcc.serviceapp.R;
 import com.tcc.serviceapp.helper.ConfiguracaoFirebase;
 import com.tcc.serviceapp.model.Usuario;
 
-import org.w3c.dom.Text;
-
 public class LoginActiviy extends AppCompatActivity {
 
     // Atributos de manipulação dos componentes da interface
@@ -35,15 +33,16 @@ public class LoginActiviy extends AppCompatActivity {
 
         // Esconde a barra superior
         getSupportActionBar().hide();
-        // Configurações iniciais
-        inicializaComponente();
 
+        // Configurações iniciais
+        inicializarComponente();
+
+        // Adiciona evento de clique no link de recuperação de senha na interface
         resetSenha.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                // Direciona para a tela de recuperação
                 startActivity(new Intent(getApplicationContext(), ResetSenhaActivity.class));
-
             }
         });
 
@@ -63,7 +62,6 @@ public class LoginActiviy extends AppCompatActivity {
                         validarLogin(usuario);
                     }
                     else {
-                        // Mensagem momentânea no rodapé do App
                         Toast.makeText(LoginActiviy.this,
                                 "Digite sua senha !",
                                 Toast.LENGTH_SHORT).show();
@@ -79,7 +77,7 @@ public class LoginActiviy extends AppCompatActivity {
     }
 
     // Inicializa atributos dessa classe com os componentes da interface
-    public void inicializaComponente() {
+    public void inicializarComponente() {
         email        = findViewById(R.id.emailLogin);
         senha        = findViewById(R.id.senhaLogin);
         logar        = findViewById(R.id.login);

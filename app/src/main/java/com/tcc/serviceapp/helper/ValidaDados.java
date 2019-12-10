@@ -7,7 +7,7 @@ import java.util.InputMismatchException;
 
 public class ValidaDados {
 
-    public static boolean validaCpf(String CPF) {
+    public static boolean validarCpf(String CPF) {
         // considera-se erro CPF's formados por uma sequencia de numeros iguais
         if (CPF.equals("00000000000") ||
                 CPF.equals("11111111111") ||
@@ -21,7 +21,6 @@ public class ValidaDados {
         char dig10, dig11;
         int sm, i, r, num, peso;
 
-        // "try" - protege o codigo para eventuais erros de conversao de tipo (int)
         try {
             // Calculo do 1o. Digito Verificador
             sm = 0;
@@ -29,7 +28,7 @@ public class ValidaDados {
             for (i=0; i<9; i++) {
                 // converte o i-esimo caractere do CPF em um numero:
                 // por exemplo, transforma o caractere '0' no inteiro 0
-                // (48 eh a posicao de '0' na tabela ASCII)
+                // (48 é a posicao de '0' na tabela ASCII)
                 num = (int)(CPF.charAt(i) - 48);
                 sm = sm + (num * peso);
                 peso = peso - 1;
@@ -63,7 +62,7 @@ public class ValidaDados {
         }
     }
 
-    public static String validadeData (String data){
+    public static String validarData(String data){
 
         String s = data;
         String retornaErro = "N";

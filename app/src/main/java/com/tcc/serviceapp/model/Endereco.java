@@ -5,6 +5,7 @@ import com.tcc.serviceapp.helper.ConfiguracaoFirebase;
 
 public class Endereco {
 
+    // Atributos
     private String  id;
     private String  cidade;
     private String  bairro;
@@ -13,6 +14,10 @@ public class Endereco {
     private String  cep;
     private String  complemento;
 
+    public Endereco() {
+    }
+
+    // Salva dados de endereço no banco de dados
     public void Salvar(Endereco endereco){
         DatabaseReference firebaseRef = ConfiguracaoFirebase.getFirebase();
         DatabaseReference enderecoRef = firebaseRef.child("Endereco").child(getId());

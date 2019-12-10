@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //
+        // Inicializa os atributos com os componentes da interface necessários
         inicializarComponentes();
 
         // Configurações dialog de progresso
@@ -348,7 +348,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    //
+    // Inicializa os atributos com os componentes da interface necessários
     private void inicializarComponentes(){
         recyclerView = findViewById(R.id.recyclerView_servicosPublicos);
         textView_todosServicos = findViewById(R.id.textView_todosServicos);

@@ -1,7 +1,5 @@
 package com.tcc.serviceapp.model;
 
-import android.net.Uri;
-
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
 import com.tcc.serviceapp.helper.ConfiguracaoFirebase;
@@ -11,6 +9,7 @@ import java.util.Date;
 
 public class Usuario implements Serializable {
 
+    // Atributos
     private String id;
     private String nome;
     private String sobrenome;
@@ -26,6 +25,7 @@ public class Usuario implements Serializable {
     public Usuario() {
     }
 
+    // Salva dados de usuario no banco de dados
     public void Salvar(){
         DatabaseReference firebaseRef = ConfiguracaoFirebase.getFirebase();
         DatabaseReference usuariosRef = firebaseRef.child("usuarios").child(getId());

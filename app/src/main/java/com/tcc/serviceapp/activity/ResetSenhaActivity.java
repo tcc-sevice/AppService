@@ -17,6 +17,7 @@ import com.tcc.serviceapp.helper.ConfiguracaoFirebase;
 
 public class ResetSenhaActivity extends AppCompatActivity {
 
+    // Atributos
     private FirebaseAuth autenticacao;
     private EditText email;
     private Button recuperarEmail;
@@ -25,27 +26,35 @@ public class ResetSenhaActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reset_senha);
-        inicializaComponente();
+
+        // Título no action bar
+        getSupportActionBar().setTitle("Recuperação de senha");
+
+        // Inicialização dos componentes
+        email = findViewById(R.id.emailReset);
+        recuperarEmail = findViewById(R.id.recSenha);
+
+        // Referencia do serviço de autenticaçao do Firebase
         autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
 
+        // Evento de clique no botao da interface
         recuperarEmail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                // Método de reset de senha do serviço de autenticação do Firebase
                 autenticacao.sendPasswordResetEmail(email.getText().toString())
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
-
                                     if(task.isSuccessful()){
                                         email.setText("");
                                         Toast.makeText(ResetSenhaActivity.this,
-                                                "Email para Redefinição de Senha Enviado com Sucesso !",
-                                                Toast.LENGTH_SHORT).show();
+                                                "E-mail para redefinição de senha enviado para o endereço informado !",
+                                                Toast.LENGTH_LONG).show();
                                     }else{
                                         Toast.makeText(ResetSenhaActivity.this,
-                                                "Falha ao Enviar Email para Redefinição de Senha !",
-                                                Toast.LENGTH_SHORT).show();
+                                                "Falha ao enviar requisição para redefinição de senha, certifique-se que o endereço de e-mail é válido !",
+                                                Toast.LENGTH_LONG).show();
                                     }
 
                                 }
@@ -54,10 +63,4 @@ public class ResetSenhaActivity extends AppCompatActivity {
             }
         });
     }
-
-    public void inicializaComponente() {
-        email            = findViewById(R.id.emailReset);
-        recuperarEmail   = findViewById(R.id.recSenha);
-    }
-
 }

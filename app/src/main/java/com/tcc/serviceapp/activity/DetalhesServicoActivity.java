@@ -1,31 +1,19 @@
 package com.tcc.serviceapp.activity;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.synnapps.carouselview.CarouselView;
 import com.synnapps.carouselview.ImageListener;
 import com.tcc.serviceapp.R;
-import com.tcc.serviceapp.helper.ConfiguracaoFirebase;
 import com.tcc.serviceapp.model.Servico;
-import com.tcc.serviceapp.model.Usuario;
 
 public class DetalhesServicoActivity extends AppCompatActivity {
 
@@ -48,6 +36,7 @@ public class DetalhesServicoActivity extends AppCompatActivity {
 
         // Inicializa os atributos com os componentes da interface necessários
         inicializarComponentes();
+
         // Recupera o serviço para a exibição
         servicoSelecionado = (Servico) getIntent().getSerializableExtra("servicoSelecionado");
         if (servicoSelecionado != null){
@@ -80,10 +69,9 @@ public class DetalhesServicoActivity extends AppCompatActivity {
         descricao = findViewById(R.id.textView_detalheDescricao);
     }
 
-    public void abreTelefone(View view) {
-
+    // Chamado ao pressionar o botão da interface, abre o discador do celular com o número de telefone do prestador
+    public void abrirTelefone(View view) {
         Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel",telefoneUser, null));
         startActivity(intent);
-
     }
 }

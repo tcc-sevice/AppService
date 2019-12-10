@@ -154,13 +154,10 @@ public class CadastroUsuarioActivity extends AppCompatActivity implements View.O
         }
     }
 
-    //
+    // Formatação da data de nascimento para um padrão
     private Date formatDate(String dataNascimento) throws ParseException {
-
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-
         Date dataFormatada = null;
-
         try {
             dataFormatada = sdf.parse(dataNascimento);
 
@@ -170,7 +167,8 @@ public class CadastroUsuarioActivity extends AppCompatActivity implements View.O
 
         return dataFormatada;
     }
-    //
+
+    // Verifica se o formato do e-mail digitado pertence ao padrão
     private boolean validateEmailFormat(final String email) {
         if (android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             return true;
@@ -204,9 +202,10 @@ public class CadastroUsuarioActivity extends AppCompatActivity implements View.O
         String campoTelefone = telefone.getText().toString();
         String campoSenha = senha.getText().toString();
         String campoConfirmarSenha = confirmarSenha.getText().toString();
-        String campoSexo = validaSexo();
+        String campoSexo = validarSexo();
 
-        if (validaCampos(campoNome, campoSobrenome, campoCpf,campoDataNascimento,campoEmail, campoTelefone, campoSenha, campoConfirmarSenha) == "N") {
+        if (validarCampos(campoNome, campoSobrenome, campoCpf,campoDataNascimento,campoEmail,
+                campoTelefone, campoSenha, campoConfirmarSenha) == "N") {
 
             Date dataNascimento = formatDate(campoDataNascimento);
 
@@ -245,8 +244,8 @@ public class CadastroUsuarioActivity extends AppCompatActivity implements View.O
         }
     }
 
-    //
-    private String validaSexo(){
+    // Atribui a escolha de sexo para uma String
+    private String validarSexo(){
 
         String sexo = "outro";
 
@@ -258,8 +257,9 @@ public class CadastroUsuarioActivity extends AppCompatActivity implements View.O
         }
         return sexo;
     }
-    //
-    private String validaSenha(String senha,String confirmaSenha){
+
+    // Verifica as senhas digitadas e retorna se estão de acordo ou não
+    private String validarSenha(String senha, String confirmaSenha){
 
         String retornaErro = "N";
 
@@ -289,20 +289,21 @@ public class CadastroUsuarioActivity extends AppCompatActivity implements View.O
         }
         return retornaErro;
     }
-    //
-    private String validaCpf(String cpf){
+
+    // Verifica o CPF digitado e por meio da classe ValidaDados, calcula se a numeração é provável
+    private String validarCpf(String cpf){
         String cpfTransform = cpf.replaceAll("[^0-9]", "");
         String retornaErro = "N";
 
-        if (!ValidaDados.validaCpf(cpfTransform)){
+        if (!ValidaDados.validarCpf(cpfTransform)){
             retornaErro = "S";
         }
         return retornaErro;
     }
 
     // Faz a verificação e respectiva validação do preenchimento de cada campo da interface
-    private String validaCampos( String campoNome, String campoSobrenome, String campoCpf, String campoDataNascimento,
-                                 String campoEmail,String campoTelefone, String campoSenha,
+    private String validarCampos(String campoNome, String campoSobrenome, String campoCpf, String campoDataNascimento,
+                                 String campoEmail, String campoTelefone, String campoSenha,
                                  String campoConfirmarSenha ) {
         String retornoErro = "S";
 
@@ -315,10 +316,10 @@ public class CadastroUsuarioActivity extends AppCompatActivity implements View.O
                                 outro.isChecked()){
                             if( !campoEmail.isEmpty()){
                                 if( campoTelefone.length() == 16){
-                                    if (validaSenha(campoSenha,campoConfirmarSenha).equals("N")) {
+                                    if (validarSenha(campoSenha,campoConfirmarSenha).equals("N")) {
                                         if (validateEmailFormat(campoEmail)){
-                                            if (validaCpf(campoCpf).equals("N")){
-                                                if (ValidaDados.validadeData(campoDataNascimento).equals("N")) {
+                                            if (validarCpf(campoCpf).equals("N")){
+                                                if (ValidaDados.validarData(campoDataNascimento).equals("N")) {
                                                     retornoErro = "N";
                                                 }else{
                                                     Toast.makeText(CadastroUsuarioActivity.this,
@@ -395,7 +396,7 @@ public class CadastroUsuarioActivity extends AppCompatActivity implements View.O
         builder.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                // Finaliza a CadastroUsuarioActivity, impedindo o usuário de se cadastrar
+                // Finaliza a CadastroUsuarioActivity caso o usuário não concorde
                 finish();
             }
         });

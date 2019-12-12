@@ -3,7 +3,7 @@
 
     <!--Textos com sublinhado-->
     <string name="esqueci_senha"><u>Esqueci minha senha !</u></string>
-    <string name="esqueci_cep"><u>Esqueci meu CEP !</u></string>
+    <string name="esqueci_cep"><u>Não sei meu CEP !</u></string>
     <string name="aplicar_filtros"><u>Aplicar filtros</u></string>
     <string name="limpar_filtros"><u>Limpar filtros</u></string>
 
@@ -13,6 +13,7 @@
     <string name="title_activity_meus_servicos">Meus serviços</string>
 
     <string-array name="localidades">
+        <item>- Selecione</item>
         <item>Campinas</item>
         <item>Louveira</item>
         <item>Valinhos</item>
@@ -20,6 +21,7 @@
     </string-array>
 
     <string-array name="categorias">
+        <item>- Selecione</item>
         <item>Cuidador</item>
         <item>Culinária</item>
         <item>Elétrica</item>
@@ -28,11 +30,12 @@
         <item>Eventos</item>
         <item>Frete</item>
         <item>Informática</item>
+        <item>Infraestrutura</item>
         <item>Instalação</item>
         <item>Limpeza</item>
         <item>Manutenção</item>
         <item>Mecânica</item>
-        <item>Montagem de móveis</item>
+        <item>Montagem</item>
         <item>Pintura</item>
         <item>Residencial</item>
     </string-array>

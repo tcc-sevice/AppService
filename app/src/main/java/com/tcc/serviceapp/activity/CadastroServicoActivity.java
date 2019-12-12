@@ -31,7 +31,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -56,9 +55,7 @@ public class CadastroServicoActivity extends AppCompatActivity implements View.O
     private CurrencyEditText campoValorServico;
     private CheckBox checkBox_valorCombinar;
 
-    private String[] permissoes = new String[]{
-            Manifest.permission.READ_EXTERNAL_STORAGE
-    };
+    private String[] permissoes = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE};
 
     private List<String> listaFotosRecuperadas = new ArrayList<>(); // Endereços do armaz. interno
     private List<String> listaUrlFotos = new ArrayList<>(); // Endereços de fotos salvas no Firebase
@@ -85,10 +82,13 @@ public class CadastroServicoActivity extends AppCompatActivity implements View.O
 
         // Inicialização de componentes necessários da interface
         inicializarComponentes();
+
+        // Configuração de referencias para o Firebase
         firebaseRef = ConfiguracaoFirebase.getFirebase();
         usuariosRef = firebaseRef.child("usuarios");
         storage = ConfiguracaoFirebase.getFirebaseStorage();
-        devolveUsuarioLogado();
+        devolverUsuarioLogado();
+
         // Carrega itens nos spinners
         carregarSpinner();
     }
@@ -197,7 +197,7 @@ public class CadastroServicoActivity extends AppCompatActivity implements View.O
     private void alertarValidacaoPermissao(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Permissão negada");
-        builder.setMessage("Para carregar fotos, será necessário aceitar a permissão de acesso");
+        builder.setMessage("Para utilizar o Sevice, será necessário aceitar a permissão de acesso para carregar fotos");
         builder.setCancelable(false);
         builder.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
             @Override
@@ -220,8 +220,8 @@ public class CadastroServicoActivity extends AppCompatActivity implements View.O
 
         // Validações
         if (listaFotosRecuperadas.size() != 0){
-            if (!servico.getLocalidade().isEmpty()){
-                if (!servico.getCategoria().isEmpty()){
+            if (!servico.getLocalidade().isEmpty() && !servico.getLocalidade().equals("- Selecione")){
+                if (!servico.getCategoria().isEmpty() && !servico.getCategoria().equals("- Selecione")){
                     if (!servico.getNomeServico().isEmpty()){
                         if ((!String.valueOf(campoValorServico.getRawValue()).isEmpty()
                                 && !String.valueOf(campoValorServico.getRawValue()).equals("0"))
@@ -268,10 +268,9 @@ public class CadastroServicoActivity extends AppCompatActivity implements View.O
         servico.setCategoria(campoCategoria.getSelectedItem().toString());
         servico.setNomeServico(campoNomeServico.getText().toString());
         servico.setNomeUsuario(usuario.getNome());
-        servico.setTelUsuario(removeCaracteresEspeciais(usuario.getTelefone()));
+        servico.setTelUsuario(removerCaracteresEspeciais(usuario.getTelefone()));
         if (checkBox_valorCombinar.isChecked()){
-            String valoraCombinar = "Valor a combinar";
-            servico.setValor(valoraCombinar);
+            servico.setValor("Valor a combinar");
         }
         else {
             servico.setValor(campoValorServico.getText().toString());
@@ -281,29 +280,28 @@ public class CadastroServicoActivity extends AppCompatActivity implements View.O
         return servico;
     }
 
-    public String removeCaracteresEspeciais (String rmcaracter){
+    // Remove certos elementos da String desejada para correto upload no banco de dados
+    public String removerCaracteresEspeciais(String rmcaracter){
         rmcaracter = rmcaracter.replaceAll("[^a-zZ-Z0-9 ]", "");
         return rmcaracter;
     }
 
-    private void devolveUsuarioLogado(){
+    // Referencia do usuário logado no aplicativo para atribuição de informações
+    private void devolverUsuarioLogado(){
         DatabaseReference usuarios = FirebaseDatabase.getInstance().getReference();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String email = user.getEmail();
         usuarios.child("usuarios").addListenerForSingleValueEvent(new ValueEventListener() {
             public void onDataChange(DataSnapshot dataSnapshot) {
-
                 for (DataSnapshot snap : dataSnapshot.getChildren()) {
                     if (email.equals(snap.child("email").getValue())) {
-
                        usuario = snap.getValue(Usuario.class);
                     }
                 }
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
+            public void onCancelled(DatabaseError databaseError) {}
         });
     }
 

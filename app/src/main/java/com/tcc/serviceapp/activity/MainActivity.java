@@ -21,15 +21,18 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.tcc.serviceapp.R;
 import com.tcc.serviceapp.adapter.AdapterServicos;
 import com.tcc.serviceapp.helper.ConfiguracaoFirebase;
 import com.tcc.serviceapp.helper.RecyclerItemClickListener;
 import com.tcc.serviceapp.model.Servico;
+import com.tcc.serviceapp.model.Usuario;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //
+        // Inicializa os atributos com os componentes da interface necessários
         inicializarComponentes();
 
         // Configurações dialog de progresso
@@ -315,7 +318,23 @@ public class MainActivity extends AppCompatActivity {
         }
         else {
             menu.setGroupVisible(R.id.group_logado, true);
-            getSupportActionBar().setTitle("Olá, ");
+            // Recupera os dados do usuário logado
+            DatabaseReference usuarios = FirebaseDatabase.getInstance().getReference();
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            String email = user.getEmail();
+            usuarios.child("usuarios").addListenerForSingleValueEvent(new ValueEventListener() {
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for (DataSnapshot snap : dataSnapshot.getChildren()) {
+                        if (email.equals(snap.child("email").getValue())) {
+                            Usuario usuario = snap.getValue(Usuario.class);
+                            getSupportActionBar().setTitle("Olá, " + usuario.getNome());
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {}
+            });
         }
 
         return super.onPrepareOptionsMenu(menu);
@@ -348,7 +367,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    //
+    // Inicializa os atributos com os componentes da interface necessários
     private void inicializarComponentes(){
         recyclerView = findViewById(R.id.recyclerView_servicosPublicos);
         textView_todosServicos = findViewById(R.id.textView_todosServicos);

@@ -1,38 +1,27 @@
 package com.tcc.serviceapp.activity;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.rtoshiro.util.format.SimpleMaskFormatter;
 import com.github.rtoshiro.util.format.text.MaskTextWatcher;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.tcc.serviceapp.R;
@@ -40,61 +29,53 @@ import com.tcc.serviceapp.helper.ConfiguracaoFirebase;
 import com.tcc.serviceapp.model.Endereco;
 import com.tcc.serviceapp.model.Usuario;
 
-import java.io.ByteArrayOutputStream;
-import java.util.Date;
-import java.util.Objects;
-import java.util.UUID;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class EnderecoActivity extends AppCompatActivity {
 
+    // Atributos
     private EditText cidade, rua, bairro, numero, complemento, cep;
     private TextView esqueciCep;
-    private ImageView fotoPerfil;
-    private Endereco endereco;
-    private String idFoto;
     private FirebaseAuth autenticacao;
-    private StorageReference storageReference;
+    private StorageReference storage;
     private Button cadastrar;
     private Usuario usuario;
-    private Uri uri;
+    private Uri imagemSelecionada;
 
-  
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_endereco);
+
         // Define o título da barra superior:
         getSupportActionBar().setTitle("Sevice - Cadastre seu endereço");
-        inicializaComponente();
-        formatMascara();
+
+        // Recebe e atribui elementos vindos da activity anterior
         Intent intent = getIntent();
-        try {
-            Bundle bundle = getIntent().getExtras();
-            if (bundle != null){
-                try {
-                    byte[] imageInByte = bundle.getByteArray("BitmapImage");
-                    Bitmap bmp = BitmapFactory.decodeByteArray(imageInByte,0,imageInByte.length);
-                    fotoPerfil = findViewById(R.id.fotoPerfil);
-                    fotoPerfil.setImageBitmap(bmp);
-                }catch (Exception e){}
-            }
-        }catch (Exception e){
-            Toast.makeText(this,""+e,Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
-        uri = (Uri) intent.getParcelableExtra("url");
+        imagemSelecionada = intent.getParcelableExtra("imagemSelecionada");
         usuario = (Usuario) intent.getSerializableExtra("usuario");
+
+        // Inicializa os atributos com os componentes da interface necessários
+        inicializarComponente();
+
+        // Referencia do Storage do Firebase para armazenar imagens
+        storage = ConfiguracaoFirebase.getFirebaseStorage();
+
+        // Atribui formatação padrão para o campo de CEP
+        formatMascara();
+
+        // Chamado ao clicar no texto "Esqueci meu CEP"
         esqueciCep.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.buscacep.correios.com.br/sistemas/buscacep")));
             }
         });
+
+        // Chamado ao clicar no botão cadastrar, realiza ultimas validações, cria e salva os dados do usuario
         cadastrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //FirebaseApp.initializeApp(this);
-                usuario.setId(idFoto);
                 autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
                 autenticacao.createUserWithEmailAndPassword(
                         usuario.getEmail(),
@@ -102,12 +83,12 @@ public class EnderecoActivity extends AppCompatActivity {
                         new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
-
                                 if (task.isSuccessful()) {
                                     try {
-                                        usuario.setId(removeCaracteresEspeciais(usuario.getCpf()));
-                                        usuario.Salvar(usuario);
-                                        cadastrarEndereco();
+                                        // O CPF do usuário será como a primary key no banco de dados
+                                        usuario.setId(removerCaracteresEspeciais(usuario.getCpf()));
+                                        salvarFotoStorage();
+
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                     }
@@ -139,31 +120,64 @@ public class EnderecoActivity extends AppCompatActivity {
         });
     }
 
-    public void inicializaComponente() {
+    // Salva a foto de perfil no Storage do Firebase
+    private void salvarFotoStorage(){
+        // Cria nó no Storage
+        StorageReference imagemUsuario = storage
+                .child("Imagens")
+                .child("Perfil")
+                .child(usuario.getId());
 
+        // Faz o upload do arquivo de imagem
+        UploadTask uploadTask = imagemUsuario.putFile(imagemSelecionada);
+        uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+            @Override
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                if (!task.isSuccessful()){
+                    throw task.getException();
+                }
+                return imagemUsuario.getDownloadUrl();
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                if (task.isSuccessful()){
+                    Uri downloadUrl = task.getResult();
+                    String path = downloadUrl.toString();
+                    usuario.setIdFoto(path);
+                    usuario.Salvar();
+                    cadastrarEndereco();
+                }
+            }
+        });
+    }
+
+    // Inicializa os atributos com os componentes da interface necessários
+    public void inicializarComponente() {
+        TextView nomeUsuarioCadastrando = findViewById(R.id.textView_nomeUsuarioCadastrando);
+        String nomeCompleto = usuario.getNome() + " " + usuario.getSobrenome();
+        nomeUsuarioCadastrando.setText(nomeCompleto);
         cidade = findViewById(R.id.cidade);
         rua = findViewById(R.id.rua);
         bairro = findViewById(R.id.bairro);
         numero = findViewById(R.id.numero);
         complemento = findViewById(R.id.complemento);
         cep = findViewById(R.id.cep);
-        fotoPerfil = findViewById(R.id.fotoPerfil);
-        idFoto = UUID.randomUUID().toString();
-        storageReference = ConfiguracaoFirebase.getFirebaseStorage();
+        CircleImageView fotoPerfil = findViewById(R.id.fotoPerfil);
+        fotoPerfil.setImageURI(imagemSelecionada);
         cadastrar = findViewById(R.id.cadastrar);
         esqueciCep = findViewById(R.id.localizaCep);
-
     }
 
+    // Atribui formatação padrão para o campo de CEP
     private void formatMascara() {
-
         SimpleMaskFormatter mascaraCep = new SimpleMaskFormatter("NNNNN-NNN");
         MaskTextWatcher formatCep = new MaskTextWatcher(cep, mascaraCep);
         cep.addTextChangedListener(formatCep);
     }
 
+    // Salva os dados de endereço do usuário, após salvar os dados pessoais, e conclui o processo
     public void cadastrarEndereco() {
-
         String campoCidade = cidade.getText().toString();
         String campoBairro = bairro.getText().toString();
         String campoRua = rua.getText().toString();
@@ -171,22 +185,19 @@ public class EnderecoActivity extends AppCompatActivity {
         String campoCep = cep.getText().toString();
         String campoComplemento = complemento.getText().toString();
 
-        if (validaCampos(campoCidade, campoBairro, campoRua, campoNumero, campoCep)== "N") {
+        if (validarCampos(campoCidade, campoBairro, campoRua, campoNumero, campoCep)== "N") {
 
-            Endereco enderecoPersisty = preenchaEndereco(campoCidade, campoBairro, campoRua, campoNumero, campoCep, campoComplemento);
-
+            Endereco enderecoPersisty = preencherEndereco(campoCidade, campoBairro, campoRua, campoNumero, campoCep, campoComplemento);
             try {
-                enderecoPersisty.setId(removeCaracteresEspeciais(usuario.getCpf()));
+                enderecoPersisty.setId(removerCaracteresEspeciais(usuario.getCpf()));
                 enderecoPersisty.Salvar(enderecoPersisty);
 
                 Toast.makeText(this,
                         "Cadastro realizado com sucesso !",
                         Toast.LENGTH_SHORT).show();
-                if (uri != null)
-                    carregaFoto(uri);
 
-                Intent login = new Intent(EnderecoActivity.this, MainActivity.class);
-                startActivity(login);
+                // Direciona para a tela main e finaliza a activity
+                startActivity(new Intent(EnderecoActivity.this, MainActivity.class));
                 finishAffinity();
 
             } catch (Exception e) {
@@ -199,127 +210,16 @@ public class EnderecoActivity extends AppCompatActivity {
         }
     }
 
-    private void carregaFoto(Uri uri) {
-
-        StorageReference imageRef = storageReference.child("Imagens")
-                .child("Perfil")
-                .child( idFoto + ".jpeg");
-        imageRef.putFile(uri).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(EnderecoActivity.this,
-                        "Erro ao fazer upload da imagem" ,
-                        Toast.LENGTH_SHORT).show();
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-                /*Toast.makeText(CadastroUsuarioActivity.this,
-                        "Sucesso ao fazer upload da imagem" ,
-                        Toast.LENGTH_SHORT).show();*/
-            }
-        });
-    }
-
-    public String removeCaracteresEspeciais (String rmcaracter){
+    // Remove certos elemento da String de CPF para correto upload no banco de dados
+    public String removerCaracteresEspeciais(String rmcaracter){
         rmcaracter = rmcaracter.replaceAll("[^a-zZ-Z0-9 ]", "");
         return rmcaracter;
     }
 
-    private void carregaFoto(Bitmap imagem) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        imagem.compress(Bitmap.CompressFormat.JPEG, 70, baos);
-        byte[] dadosImagem = baos.toByteArray();
-
-        StorageReference imageRef = storageReference.child("Imagens")
-                .child("Perfil")
-                .child( idFoto + ".jpeg");
-
-        UploadTask uploadTask = imageRef.putBytes(dadosImagem);
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(EnderecoActivity.this,
-                        "Erro ao fazer upload da imagem" ,
-                        Toast.LENGTH_SHORT).show();
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-                // Esconde o texto "Carregar imagem" abaixo da foto de perfil
-                findViewById(R.id.textView_carregarImagem).setVisibility(View.GONE);
-
-                /*Toast.makeText(CadastroUsuarioActivity.this,
-                        "Sucesso ao fazer upload da imagem" ,
-                        Toast.LENGTH_SHORT).show();*/
-            }
-        });
-    }
-    
-    private String preencheUser(String campoNome, String campoSobrenome, String campoCpf, Date campoDataNascimento, String campoEmail, String campoTelefone, String campoSenha, String campoConfirmarSenha, String campoSexo) {
-
-        final Usuario usuario = new Usuario();
-        usuario.setNome(campoNome);
-        usuario.setSobrenome(campoSobrenome);
-        usuario.setCpf(campoCpf);
-        usuario.setDataNascimento(campoDataNascimento);
-        usuario.setSexo(campoSexo);
-        usuario.setEmail(campoEmail);
-        usuario.setTelefone(campoTelefone);
-        usuario.setSenha(campoSenha);
-        usuario.setConfirmaSenha(campoConfirmarSenha);
-
-
-        //FirebaseApp.initializeApp(this);
-        autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
-        autenticacao.createUserWithEmailAndPassword(
-                usuario.getEmail(),
-                usuario.getSenha()).addOnCompleteListener(
-                new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-
-                        if( task.isSuccessful() ){
-                            try {
-                                String idUsuario =  task.getResult().getUser().getUid();
-                                usuario.setId(idUsuario);
-                                usuario.Salvar(usuario);
-                            }catch (Exception e){
-                                e.printStackTrace();
-                            }
-                        }else {
-
-                            String erroExcecao = "";
-                            try{
-                                throw task.getException();
-                            }catch (FirebaseAuthWeakPasswordException e){
-                                erroExcecao = "Digite uma senha mais forte, use combinações de letras e números !";
-                            }catch (FirebaseAuthInvalidCredentialsException e){
-                                erroExcecao = "Por favor, digite um e-mail válido !";
-                            }catch (FirebaseAuthUserCollisionException e){
-                                erroExcecao = "Este e-mail já está cadastrado !";
-                            } catch (Exception e) {
-                                erroExcecao = "ao cadastrar usuário: "  + e.getMessage();
-                                e.printStackTrace();
-                            }
-
-                            Toast.makeText(EnderecoActivity.this,
-                                    "Erro: " + erroExcecao ,
-                                    Toast.LENGTH_SHORT).show();
-
-                        }
-                    }
-                }
-        );
-
-        return usuario.getId();
-    }
-
-    private Endereco preenchaEndereco(String campoCidade, String campoBairro, String campoRua, String campoNumero,
-                                      String campoCep, String campoComplemento) {
-        endereco = new Endereco();
+    // Configura o objeto endereço
+    private Endereco preencherEndereco(String campoCidade, String campoBairro, String campoRua, String campoNumero,
+                                       String campoCep, String campoComplemento) {
+        Endereco endereco = new Endereco();
         endereco.setCidade(campoCidade);
         endereco.setBairro(campoBairro);
         endereco.setRua(campoRua);
@@ -329,8 +229,9 @@ public class EnderecoActivity extends AppCompatActivity {
         return endereco;
     }
 
-    private String validaCampos(String campoCidade, String campoBairro, String campoRua, String campoNumero,
-                              String campoCep) {
+    // Verificação de todos os campos digitados
+    private String validarCampos(String campoCidade, String campoBairro, String campoRua, String campoNumero,
+                                 String campoCep) {
         String retornoErro = "S";
         if (!campoCidade.isEmpty()) {
             if (!campoBairro.isEmpty()) {
